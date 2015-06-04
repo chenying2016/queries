@@ -1,0 +1,17 @@
+HS-BLASTN produces the same results as MegaBLAST.
+However, if there is one query having two or more alignments whose e-values and bit-scores are all identical, then HS-BLASTN and MegaBLAST might output these alignments in different orders.
+So that simply comparing HS-BLASTN's outputs and MegaBLAST's outputs by using the "diff" tool may not yields our claim.
+
+To verify that HS-BLASTN produces the same results as MegaBLAST, one can first sort the output results using the "sort" tool, and then compare their sorted results using the "diff" tool.
+For example, to verify that the following two commands:
+
+  hs-blastn align -db hg38.fa -window_masker_db hg38.fa.counts.obinary -query HSQueriesSmall.fa -out hs-blastn_results_small.txt -outfmt 6
+  blastn -task megablast -db hg38.fa -window_masker_db hg38.fa.counts.obinary -query HSQueriesSmall.fa -out megablast_results_small.txt -outfmt 6
+
+produce the same results, we can perform the following 3 commands in order:
+
+  sort hs-blastn_results_small.txt > sorted_hs-blastn_results_small.txt
+  sort megablast_results_small.txt > sorted_megablast_results_small.txt
+  diff sorted_hs-blastn_results_small.txt sorted_megablast_results_small.txt
+
+This method only works for output format 6 and format 7. That is, the argument to the option -outfmt must be 6 or 7.
