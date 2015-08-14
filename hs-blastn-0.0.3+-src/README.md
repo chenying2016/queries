@@ -77,9 +77,9 @@ Output results
 Citation
 --------------------------
 
-  High speed BLASTN: an accelerated MegaBLAST search tool<br>  
-  Ying Chen; Weicai Ye; Yongdong Zhang; Yuesheng Xu<br>  
-  Nucleic Acids Research 2015;<br>  
+  [High speed BLASTN: an accelerated MegaBLAST search tool](http://nar.oxfordjournals.org/cgi/content/full/gkv784?ijkey=2fcni6OzEAhoUvd&keytype=ref)<br>
+  Ying Chen; Weicai Ye; Yongdong Zhang; Yuesheng Xu<br>
+  Nucleic Acids Research 2015;<br>
   doi: 10.1093/nar/gkv784
  
 Contact
