@@ -17,14 +17,14 @@ Download and Install
 
 ```shell
  git clone https://github.com/chenying2016/queries.git
- cd hs-blastn-0.0.3+-src
+ cd hs-blastn-0.0.4+-src
  make
  ```
 How to use
 ------------------------------
 
  We take the experiemtns in the paper as an example to introduce how to use HS-BLASTN.
- The following 3 tools are provided by BLAST: blastn, mekablastdb, windowmasker. 
+ The following 3 tools are provided by [NCBI-BLAST Version 2.2.31+](ftp://ftp.ncbi.nlm.nih.gov/blast/executables/LATEST/ncbi-blast-2.2.31+-x64-linux.tar.gz): blastn, mekablastdb, windowmasker. 
  These three tools, together with hs-blastn, and all the files from directory queries, 
  should be put in the same directory. The tested queries can be downloaded from 
  https://github.com/chenying2016/experimental_queries. You should download it by klicking the "Download ZIP" button 
@@ -65,6 +65,16 @@ How to use
     hs-blastn align -db hg38.fa -window_masker_db hg38.fa.counts.obinary -query query100.fa -out results_query_100.fa -outfmt 7
     ```
  
+On Searching against the repeat-subregion-rich database
+---------------------------
+
+ When searching against a repeat-subregion-rich database, such as the human genomic database, 
+ the WindowMasker is must be used for masking out these regions.
+ Otherwise no performance advantages of HS-BLASTN is guaranteed.
+ In fact, the existance of the repeated subsequences results in searching results that are consisted completely of these subsequences.
+ Those results are not of biological interest.
+ In addition, they will also make the searching time unexpected long.
+
 Output results
 ---------------------------
 

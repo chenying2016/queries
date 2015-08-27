@@ -1,0 +1,4 @@
+hs-blastn-0.0.4+-src
+1) fix the bug that cannot compile on osX
+2) removes the constraint of the windowmasker
+3) merge changes in ncbi-blast-2.2.31+ from ncbi-blast-2.2.30+

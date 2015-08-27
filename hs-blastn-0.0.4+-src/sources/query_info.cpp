@@ -208,14 +208,15 @@ void QueryInfo::MakeBlastnaQuery()
 }
 
 /**
- * Some words on if (window_masker != NULL) else if (dust_masker != NULL)
+ * Some comments on 
+ * if (window_masker != NULL) { ... } else if (dust_masker != NULL) { ... }
  * In NCBI-BLASTN, the two maskers: WindowMasker and DustMasker can perfrom on queries simulataneously.
  * However, the results of WindowMasker will override the results produced by DustMasker.
- * In NCBI-BLAST 2.2.29, this can be seen from:
- * 1) line 188, file dust_filter.cpp: queries.SetMaskedRegions(), the results of DustMasker are storeed.
+ * In NCBI-BLAST 2.2.31+, this can be seen from:
+ * 1) line 188, file dust_filter.cpp: queries.SetMaskedRegions(), the results of DustMasker are stored.
  * 2) line 315, file winmask_filter.cpp: query.SetMaskedRegions(), the results WindowMasker override the results of DustMasker.
  * We do not know if this is a bug.
- * To make sure that our results will be the same as NCBI-BLASTN, we make the if-else if cluase.
+ * To make sure that our results will be the same as NCBI-BLASTN, we make the if-else if cluase mentioned above.
  */
 
 void QueryInfo::GetScanRanges(Int4 seed_size, CSymDustMasker* dust_masker, CSeqMasker* window_masker)

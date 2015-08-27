@@ -3,6 +3,11 @@
 #include "index.h"
 #include <cstdio>
 #include <unistd.h>
+#include <iostream>
+using std::cout;
+using std::endl;
+using std::cerr;
+using std::clog;
 
 PrintVersionOption*
 PrintVersionOptionNew()
@@ -146,30 +151,29 @@ BlastScoringOptionsNew()
 
 void PrintScoringOptions(BlastScoringOptions* options)
 {
-    fprintf(stderr, "[%s] reward = %d\n", __func__, options->reward);
-    fprintf(stderr, "[%s] penalty = %d\n", __func__, options->penalty);
-    fprintf(stderr, "[%s] gap open = %d\n", __func__, options->gap_open);
-    fprintf(stderr, "[%s] gap extend = %d\n", __func__, options->gap_extend);
+	cerr << "[" << __func__ << "] reward = " << options->reward << endl;
+	cerr << "[" << __func__ << "] penalty = " << options->penalty << endl;
+	cerr << "[" << __func__ << "] gap open = " << options->gap_open << endl;
+	cerr << "[" << __func__ << "] gap extend = " << options->gap_extend << endl;
 }
-
 void
 PrintInitialWordOptions(BlastInitialWordOptions* options)
 {
-	fprintf(stderr, "[%s] gap_trigger=%f\n", __func__, options->gap_trigger);
-	fprintf(stderr, "[%s] window_size=%d\n", __func__, options->window_size);
-	fprintf(stderr, "[%s] scan_range=%d\n", __func__, options->scan_range);
-	fprintf(stderr, "[%s] x_dropoff=%f\n", __func__, options->x_dropoff);
-	fprintf(stderr, "\n\n");
+	cerr << "[" << __func__ << "] gap_trigger = " << options->gap_trigger << endl;
+	cerr << "[" << __func__ << "] window_size = " << options->window_size << endl;
+	cerr << "[" << __func__ << "] scan_range = " << options->scan_range << endl;
+	cerr << "[" << __func__ << "] x_dropoff = " << options->x_dropoff << endl;
+	cerr << endl << endl;
 }
 
 void
 PrintExtensionOptions(BlastExtensionOptions* options)
 {
-	fprintf(stderr, "[%s] gap_x_dropoff = %f\n", __func__, options->gap_x_dropoff);
-	fprintf(stderr, "[%s] gap_x_dropoff_final = %f\n", __func__, options->gap_x_dropoff_final);
-	fprintf(stderr, "[%s] ePrelimGapExt = %d\n", __func__, options->ePrelimGapExt);
-	fprintf(stderr, "[%s] compositionBasedStats = %d\n", __func__, options->compositionBasedStats);
-	fprintf(stderr, "\n\n");
+	cerr << "[" << __func__ << "] gap_x_dropoff = " << options->gap_x_dropoff << endl;
+	cerr << "[" << __func__ << "] gap_x_dropoff_final = " << options->gap_x_dropoff_final << endl;
+	cerr << "[" << __func__ << "] ePrelimGapExt = " << options->ePrelimGapExt << endl;
+	cerr << "[" << __func__ << "] compositionBasedStats = " << options->compositionBasedStats << endl;
+	cerr << endl << endl;
 }
 
 void
@@ -190,14 +194,14 @@ PrintHitSavingOptions(BlastHitSavingOptions* options)
 
 void PrintEffectiveLengthOptions(BlastEffectiveLengthsOptions* options)
 {
-	fprintf(stderr, "[%s] db_length = %ld\n", __func__, options->db_length);
+	fprintf(stderr, "[%s] db_length = %ld\n", __func__, (long)options->db_length);
 	fprintf(stderr, "[%s] dbseq_num = %d\n", __func__, options->dbseq_num);
-	fprintf(stderr, "[%s] num_searchspaces = %d\n", __func__, options->num_searchspaces);
+	fprintf(stderr, "[%s] num_searchspaces = %ld\n", __func__, (long)options->num_searchspaces);
 	if (options->num_searchspaces > 0 && options->searchsp_eff != NULL)
 	{
 		int i;
 		for (i = 0; i < options->num_searchspaces; ++i)
-			fprintf(stderr, "[%s] searchsp_eff[%d] = %ld\n", __func__, i, options->searchsp_eff[i]);
+			fprintf(stderr, "[%s] searchsp_eff[%d] = %ld\n", __func__, i, (long)options->searchsp_eff[i]);
 	}
 	fprintf(stderr, "\n\n");
 }
@@ -405,11 +409,11 @@ Int2 HelpOptionsValidate(const HelpOptions* help_options)
 
 Int2 FilterOptionsValidate(const SBlastFilterOptions* filtering_options)
 {
-    if (filtering_options->windowMaskerOptions->database == NULL)
-    {
-        fprintf(stderr, "[%s] Error: The -window_masker_db option must be specified.\n", __func__);
-        exit(1);
-    }
+//    if (filtering_options->windowMaskerOptions->database == NULL)
+//    {
+//        fprintf(stderr, "[%s] Error: The -window_masker_db option must be specified.\n", __func__);
+//        exit(1);
+//   }
 
     return 1;
 }

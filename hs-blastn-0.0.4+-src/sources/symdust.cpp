@@ -109,7 +109,7 @@ inline void
 CSymDustMasker::triplets::find_perfect()
 {
 	typedef perfect_list_type::iterator perfect_iter_type;
-	static counts_type counts(64);
+	/*static*/ counts_type counts(64);
 
 	Uint4 count = stop_ - L;
 

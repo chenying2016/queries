@@ -3,32 +3,38 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
+
+using std::cout;
+using std::endl;
+using std::cerr;
+using std::clog;
 
 void GapPrelimEditBlock::Print()
 {
-    int i;
-    int ins = 0, del = 0;
-    int len = 0;
-    for (i = 0; i < num_ops; ++i)
-    {
-        if (edit_ops[i].op_type == eGapAlignSub)
-        {
-            printf("subs: %d\n", edit_ops[i].num);
-        }
-        if (edit_ops[i].op_type == eGapAlignIns)
-        {
-            printf("Ins: %d\n", edit_ops[i].num);
-            ins += edit_ops[i].num;
-        }
-        if (edit_ops[i].op_type == eGapAlignDel)
-        {
-            printf("Del: %d\n", edit_ops[i].num);
-            del += edit_ops[i].num;
-        }    
-        len += edit_ops[i].num;
-    }
-    printf("\ntotal ins: %d\ntotal del: %d\n", ins, del);
-    printf("total length: %d\n", len);
+	int i, ins = 0, del = 0, len = 0;
+	for (i = 0; i < num_ops; ++i)
+	{
+		if (edit_ops[i].op_type == eGapAlignSub)
+		{
+			cout << "Subs: " << edit_ops[i].num << endl;
+		}
+		else if (edit_ops[i].op_type == eGapAlignIns)
+		{
+			cout << "Ins: " << edit_ops[i].num << endl;
+			ins += edit_ops[i].num;
+		}
+		else if (edit_ops[i].op_type == eGapAlignDel)
+		{
+			cout << "Del: " << edit_ops[i].num << endl;
+			del += edit_ops[i].num;
+		}
+		len += edit_ops[i].num;
+	}
+	cout << endl 
+		 << "total Ins: " << ins << endl
+		 << "total Del: " << del << endl
+		 << "total length: " << len << endl;
 }
 
 void GapEditScript::Destroy()
@@ -320,12 +326,6 @@ HSP* HSPDelete(SmallObjAllocator& soa, HSP* hsp)
     return NULL;
 }
 
-void HSPPrint(HSP* hsp)
-{
-	printf("context = %d, sid = %d, qoff = %d, qend = %d, soff = %ld, send = %ld, score = %d\n",
-		   hsp->context, hsp->subject_id, hsp->q_off, hsp->q_end, hsp->s_off, hsp->s_end, hsp->score);
-}
-
 int GetNumIndels(GapEditScript* esp)
 {
     int ret = 0;
@@ -442,7 +442,6 @@ Int2 GreedyAligner::GreedyGappedAlignment(const Uint1* query, const Uint1* subje
 //    {
 //    	ReduceGaps(query+q_off-q_ext_l, subject+s_off - s_ext_l);
 //    }
-    
     if (esp) s_ReduceGaps(esp, query+q_off-q_ext_l, subject+s_off-s_ext_l,
                           query+q_off+q_ext_r, subject+s_off+s_ext_r);
   }
@@ -624,17 +623,7 @@ ScoreCompareHSPs(const void* h1, const void* h2)
    return result;
 }
 
-static int
-s_FuzzyEvalueComp(double evalue1, double evalue2)
-{
-#define FUZZY_EVALUE_FACTOR 1e-6
-    if (evalue1 < (1 - FUZZY_EVALUE_FACTOR) * evalue2)
-        return -1;
-    else if (evalue1 > (1 + FUZZY_EVALUE_FACTOR) * evalue2)
-        return 1;
-    else
-        return 0;
-}
+extern int s_FuzzyEvalueComp(double, double);
 
 int 
 EvalueCompareHSPs(const void* v1, const void* v2)

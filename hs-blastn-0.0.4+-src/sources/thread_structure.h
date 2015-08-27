@@ -11,15 +11,19 @@
 static inline int
 BindCPU(int tid)
 {
+#ifdef __USE_GNU
     cpu_set_t mask;
     CPU_ZERO(&mask);
     CPU_SET(tid, &mask);
     return pthread_setaffinity_np(pthread_self(), sizeof(mask), &mask);
+#else
+	return 0;
+#endif
 }
 
 void* ThreadFunc(void* threadData)
 {
-	BindCPU(((SearchWorker*)threadData)->thread_id);
+    BindCPU(((SearchWorker*)threadData)->thread_id);
     SearchWorker* sw = (SearchWorker*)threadData;
     sw->Go();
     
@@ -34,7 +38,7 @@ struct ThreadCommonData
     DbInfo* dbinfo;
     OutputFormat* result_writter;
     
-    CSymDustMasker* dust_masker;
+    CSymDustMasker** dust_maskers;
     CSeqMasker** window_maskers;
 };
 
@@ -63,7 +67,7 @@ ThreadCommonDataNew(int argc, const char** argv)
     index->RestoreBwt2();
     index->RestoreSa();
     
-    retval->dust_masker = NULL;
+    retval->dust_maskers = NULL;
     retval->window_maskers = NULL;
     
     if (opts->filtering_options->windowMaskerOptions->database != NULL)
@@ -73,7 +77,9 @@ ThreadCommonDataNew(int argc, const char** argv)
 			retval->window_maskers[i] = s_BuildSeqMasker(opts->filtering_options->windowMaskerOptions->database);
 	} else if (opts->filtering_options->mask_at_seeding)
     {
-        retval->dust_masker = 
+	retval->dust_maskers = new CSymDustMasker*[opts->running_options->num_threads];
+	for (int i = 0; i < opts->running_options->num_threads; ++i)
+        retval->dust_maskers[i] = 
                new CSymDustMasker (opts->filtering_options->dustOptions->kDustLevel,
                                    opts->filtering_options->dustOptions->kDustWindow,
                                    opts->filtering_options->dustOptions->kDustLinker);             
@@ -99,6 +105,14 @@ ThreadCommonDataDelete(ThreadCommonData* data)
 		delete[] data->window_maskers;
 		data->window_maskers = NULL;
 	}
+
+	if (data->dust_maskers)
+	{
+		for (int i = 0; i < data->options->running_options->num_threads; ++i)
+			delete data->dust_maskers[i];
+		delete[] data->dust_maskers;
+		data->dust_maskers = NULL;
+	}
     
     if (data == NULL)
         return NULL;
@@ -108,8 +122,6 @@ ThreadCommonDataDelete(ThreadCommonData* data)
         delete data->fmindex;
     if (data->result_writter)
         delete data->result_writter;
-    if (data->dust_masker)
-        delete data->dust_masker;
 
     delete data;
     data = NULL;

@@ -289,9 +289,12 @@ void FormatUtil::AddSpace(OutputBuffer& out, int number)
         out << " ";
 }
 
-void FormatUtil::GetScoreString(double evalue, double bit_score, int raw_score,
-                               string& evalue_str, string& bit_score_str,
-                               string& raw_score_str)
+void FormatUtil::GetScoreString(double evalue, 
+								double bit_score, 
+								int raw_score,
+                                string& evalue_str, 
+								string& bit_score_str,
+                                string& raw_score_str)
 {
     char evalue_buf[100], bit_score_buf[100];
     static string kBitScoreFormat("%4.1lf");
@@ -322,13 +325,13 @@ void FormatUtil::GetScoreString(double evalue, double bit_score, int raw_score,
     }
     else
     {
-        snprintf(evalue_buf, sizeof(evalue_buf), "%5.0f", evalue);
+        snprintf(evalue_buf, sizeof(evalue_buf), "%2.0lf", evalue);
     }
 
     if (bit_score > 99999){
         snprintf(bit_score_buf, sizeof(bit_score_buf), "%5.3le", bit_score);
     } else if (bit_score > 99.9){
-        snprintf(bit_score_buf, sizeof(bit_score_buf), "%5.0ld", (long)bit_score);
+        snprintf(bit_score_buf, sizeof(bit_score_buf), "%3.0ld", (long)bit_score);
     } else {
         snprintf(bit_score_buf, sizeof(bit_score_buf), kBitScoreFormat.c_str(), bit_score);
     }
@@ -550,21 +553,25 @@ int HSPCmpFunc_sbjid_bitscore(const void* a, const void* b)
     else return 0;
 }
 
+/** Precision to which e-values are compared. */
+#define FUZZY_EVALUE_COMPARE_FACTOR 1e-6
+
 /** Compares 2 real numbers up to a fixed precision.
  * @param evalue1 First evalue [in]
  * @param evalue2 Second evalue [in]
  */
-static int 
+int 
 s_FuzzyEvalueComp(double evalue1, double evalue2)
 {
-/** Precision to which e-values are compared. */
-#define FUZZY_EVALUE_COMPARE_FACTOR 1e-6
-   if (evalue1 < (1-FUZZY_EVALUE_COMPARE_FACTOR)*evalue2)
-      return -1;
-   else if (evalue1 > (1+FUZZY_EVALUE_COMPARE_FACTOR)*evalue2)
-      return 1;
-   else 
-      return 0;
+	if (evalue1 < 1.0e-180 && evalue2 < 1.0e-180)
+		return 0;
+
+	if (evalue1 < (1-FUZZY_EVALUE_COMPARE_FACTOR)*evalue2)
+		return -1;
+	else if (evalue1 > (1+FUZZY_EVALUE_COMPARE_FACTOR)*evalue2)
+		return 1;
+	else 
+		return 0;
 }
 
 int SaiCmpFun_evalue_sbjid(const void* v1, const void* v2)
@@ -637,7 +644,7 @@ void FormatUtil::PrintQueryAndDbNames(QueryInfo& query_info,
                                       DbInfo* dbinfo,
                                       OutputBuffer& out)
 {
-    out << "# BLASTN 2.2.29+\n";
+    out << "# BLASTN 2.2.31+\n";
     
     FormatUtil::AcknowledgeQuery(query_info, qid, kFormatLineLength, out, true);
     

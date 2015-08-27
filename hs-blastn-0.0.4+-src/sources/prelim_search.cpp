@@ -83,16 +83,9 @@ s_SetHitValue(Hit& h, Int4 qoff, Int4 soff, Int4 ext_l,
     h.context = context;
 }
 
-static int HitSort_Score(const void* a, const void* b)
-{
-    const Hit* pa = (const Hit*)a;
-    const Hit* pb = (const Hit*)b;
-    if (pa->score > pb->score) return -1;
-    if (pa->score < pb->score) return 1;
-	if (pa->qoff < pb->qoff) return -1;
-	if (pa->qoff > pb->qoff) return 1;
-    return 0;
-}
+#ifndef BLAST_CMP
+#define BLAST_CMP(a, b) ((a) > (b) ? 1 : ((a) < (b) ? -1 : 0))
+#endif
 
 struct HitSortScore
 {
@@ -105,6 +98,40 @@ struct HitSortScore
 		return false;
 	}
 };
+
+/** Callback for sorting an array of initial HSP structures (not pointers to
+ *  * structures!) by score. 
+ *   */
+static int score_compare_match(const void *v1, const void *v2)
+{
+    Hit *h1, *h2;
+    int result = 0;
+
+    h1 = (Hit*) v1;
+    h2 = (Hit*) v2;
+
+    /* Check if ungapped_data substructures are initialized. If not, move
+ *        those array elements to the end. In reality this should never happen. */
+    if (h1 == NULL && h2 == NULL)
+        return 0;
+    else if (h1 == NULL)
+        return 1;
+    else if (h2 == NULL)
+        return -1;
+
+    if (0 == (result = BLAST_CMP(h2->score,
+                                 h1->score)) &&
+        0 == (result = BLAST_CMP(h1->soff,
+                                 h2->soff)) &&
+        0 == (result = BLAST_CMP(h2->len,
+                                 h1->len)) &&
+        0 == (result = BLAST_CMP(h1->qoff,
+                                 h2->qoff))) {
+        result = BLAST_CMP(h2->len, h1->len);
+    }
+
+    return result;
+}
 
 struct SeedCmpContextGiBlockDiagQoff
 {
@@ -150,7 +177,7 @@ void PrintMEMList(MEM* seeds, Int4 num_seeds)
 
 void PrintHit(Hit& m)
 {
-	cout << "context = " << m.context << ", len = " << m.len << ", qoff = " << m.qoff << ", soff = " << m.soff << endl;
+	cout << "context = " << m.context << ", len = " << m.len << ", qoff = " << m.qoff << ", soff = " << m.soff << ", score = " << m.score << endl;
 }
 
 /*********************************** ungapped and score-only gapped extension functions *************/
@@ -416,9 +443,9 @@ void OneContextOneSubjectBlockGetGappedScore(SimpleArray<Hit>& ungapped_alignmen
 	hsp.subject_id = gi;
 	hsp.context = context;
 	Int4 num_hits = ungapped_alignments.size();
-	std::sort(&ungapped_alignments[0], &ungapped_alignments[0] + num_hits, HitSortScore());
+	//std::sort(&ungapped_alignments[0], &ungapped_alignments[0] + num_hits, score_compare_match());
+	qsort(&ungapped_alignments[0], ungapped_alignments.size(), sizeof(Hit), score_compare_match);
 	Int4 last_num_gapped_alignments = gapped_alignments.size();
-	
 	for (int i = 0; i < num_hits; ++i)
 	{
 		hsp.q_off = ungapped_alignments[i].qoff;

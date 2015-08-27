@@ -101,8 +101,8 @@ int align(int argc, const char** argv)
 								  &query_batch,
                                   run_data->fmindex,
                                   run_data->dbinfo,
-                                  run_data->dust_masker,
-                                  run_data->window_maskers[i],
+                                  run_data->dust_maskers ? run_data->dust_maskers[i] : NULL,
+                                  run_data->window_maskers ? run_data->window_maskers[i] : NULL,
 								  i);
 		sws[i]->thread_id = i;
     }

@@ -264,7 +264,6 @@ void SearchWorker::Go()
 	
     Seeding();
 
-
 	PrelimSearchStage(seeds,
 					  &local_queries,
 					  dbinfo,
@@ -286,8 +285,6 @@ void SearchWorker::Go()
 	local_queries.query_names.set_data(NULL, 0, 0, TRUE);
     local_queries.query_offsets.set_data(NULL, 0, 0, TRUE);
     local_queries.org_queries.set_data(NULL, 0, 0, TRUE);
-	
-	assert(local_queries.line_reader == NULL);
 }
 
 void SearchWorker::FlushResults(FILE* file)

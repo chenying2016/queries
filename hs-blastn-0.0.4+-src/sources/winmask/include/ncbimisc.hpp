@@ -48,7 +48,9 @@
 #endif
 
 #if !defined(HAVE_NULLPTR)
+#ifndef nullptr
 #  define nullptr NULL
+#endif
 #endif
 
 #if defined(_DEBUG)  &&  !defined(NCBI_NO_STRICT_CTYPE_ARGS)

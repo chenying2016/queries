@@ -1,7 +1,7 @@
 OBJECT_DIR      := objs
 
 #EXTRA_CFLAGS    := -pg -g -ggdb
-EXTRA_CFLAGS    := -O3
+XTRA_CFLAGS    := -O3
 EXTRA_CFLAGS    += -Wall -Wno-unused -D__STDC_FORMAT_MACROS
 LDFLAGS         :=  -pthread
 src-y           := ./sources/ ./sources/winmask/source/ ./sources/commandline_options/
