@@ -13,6 +13,7 @@ struct ContextInfo
 {
     Int4 offset;
     Int4 length;
+	Boolean is_valid;
 };
 
 struct QueryOffset

@@ -16,7 +16,7 @@ BlastExtensionParameters::BlastExtensionParameters(
         Blast_KarlinBlk* kbp = NULL;
         Int2 status = 0;
         status = s_BlastFindValidKarlinBlk(sbp->kbp, query_info, &kbp);
-        ASSERT(status == 0);
+        if (status != 0) return;
     }
 
     options = ex_options;
@@ -123,6 +123,12 @@ BlastHitSavingParameters::BlastHitSavingParametersUpdate(
             Int8 searchsp;
             Int4 new_cutoff = 1;
             double evalue = options->expect_value;
+			
+			if (!(query_info->contexts[context].is_valid))
+			{
+				cutoffs[context].cutoff_score = INT4_MAX;
+				continue;
+			}
 
             kbp = kbp_array[context];
             if (kbp == NULL) continue;
@@ -136,7 +142,7 @@ BlastHitSavingParameters::BlastHitSavingParametersUpdate(
 
         for (context = 0; context < query_info->Size() * 2; ++context)
         {
-            if (sbp->kbp[context] != NULL)
+            if (query_info->contexts[context].is_valid && sbp->kbp[context] != NULL)
             {
                 cutoffs[context].cutoff_score *= (Int4)scale_factor;
                 cutoffs[context].cutoff_score_max *= (Int4)scale_factor;
@@ -159,7 +165,7 @@ BlastInitialWordParameters::BlastInitialWordParameters(
 		const BlastHitSavingParameters* hit_params,
 		const BlastScoreBlk* sbp,
 	        QueryInfo* query_info,
-		Int8 subject_length)
+		Int8 subject_length) : cutoffs(NULL)
 {
 	Int2 status;
 	Blast_KarlinBlk* kbp;
@@ -168,7 +174,7 @@ BlastInitialWordParameters::BlastInitialWordParameters(
 	ASSERT(word_options);
 	ASSERT(sbp);
 	status = s_BlastFindValidKarlinBlk(sbp->kbp, query_info, &kbp);
-	ASSERT(status == 0);
+	if (status != 0) return;
 
 	ungapped_extension = TRUE;
 	cutoffs = (BlastUngappedCutoffs*)calloc(sizeof(BlastUngappedCutoffs),
@@ -178,6 +184,7 @@ BlastInitialWordParameters::BlastInitialWordParameters(
 
 	for (i = 0; i < query_info->Size() * 2; ++i)
 	{
+		if (!(query_info->contexts[i].is_valid)) continue;
 		kbp = sbp->kbp[i];
 		ASSERT(s_BlastKarlinBlkIsValid(kbp));
 		cutoffs[i].x_dropoff_init = (Int4)
@@ -234,6 +241,12 @@ Int2 BlastInitialWordParameters::BlastInitialWordParamtersUpdate(
 		Blast_KarlinBlk* kbp;
 		Int4 new_cutoff = 1;
 		BlastUngappedCutoffs* curr_cutoffs = cutoffs + context;
+		
+		if (!(query_info->contexts[context].is_valid))
+		{
+			curr_cutoffs->cutoff_score = INT4_MAX;
+			continue;
+		}
 
 		if (sbp->kbp)
 		{

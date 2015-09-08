@@ -1,4 +1,9 @@
+Changes on 8, Sep, 2015:
+	1) fix the bug on clash when processing all Ns queires.
+	2) add support for queries input from stdin
+	3) fix the bug for the option -perc_identity
+
 hs-blastn-0.0.4+-src
-1) fix the bug that cannot compile on osX
-2) removes the constraint of the windowmasker
-3) merge changes in ncbi-blast-2.2.31+ from ncbi-blast-2.2.30+
+	1) fix the bug that cannot compile on osX
+	2) removes the constraint of the windowmasker
+	3) merge changes in ncbi-blast-2.2.31+ from ncbi-blast-2.2.30+

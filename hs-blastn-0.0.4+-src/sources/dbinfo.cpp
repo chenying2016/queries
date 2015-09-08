@@ -115,7 +115,7 @@ void DbInfo::LoadDatabase()
     GB = GB << 30;
     double gb = 1.0 * m_DatabaseLength / GB;
     //clog << "\tLoading " << name << ", size = " << gb << "GB\n";
-    fprintf(stderr, "\tLoading %s, size = %.1lfGB\n", name, gb);
+    fprintf(stderr, "\tLoading %s, size = %.1gGB\n", name, gb);
 
     m_Database.reserve(m_DatabaseLength);
 	cy_utility::FileOperator::read_file(kClassName, name, file, m_Database.get_data(), m_DatabaseLength);
@@ -212,18 +212,17 @@ void DbInfo::LoadHeaders()
 	SIZE_TYPE x;
 	
 #define CHECK_FILE_END if (line_reader.AtEof()) goto unexpected_end_of_file;	
+#define READ_ONE_LINE_AND_CHECK if (!(++line_reader)) goto unexpected_end_of_file;
 
     Clear();
 	
 	std::string* tline;
 
     // database name
-    CHECK_FILE_END;
+    READ_ONE_LINE_AND_CHECK
 
     // number of sequence
-    ++line_reader;
-    CHECK_FILE_END
-    ++line_reader;
+	READ_ONE_LINE_AND_CHECK
     line_number = line_reader.GetCurrentLineNumber();
     header_line.ChangeLine(&line_reader.GetLine());
     if (!header_line.Pass(kDelim) || !header_line.IsActive()) goto parsing_error;
@@ -231,8 +230,7 @@ void DbInfo::LoadHeaders()
 	if (status) goto parsing_error;
 
     // database size
-    CHECK_FILE_END
-    ++line_reader;
+	READ_ONE_LINE_AND_CHECK
     line_number = line_reader.GetCurrentLineNumber();
     header_line.ChangeLine(&line_reader.GetLine());
     if (!header_line.Pass(kDelim) || !header_line.IsActive()) goto parsing_error;
@@ -243,12 +241,11 @@ void DbInfo::LoadHeaders()
     for (i = 0; i < num_seqs; ++i)
     {
         // subject i
-        CHECK_FILE_END
-        ++line_reader;
+		READ_ONE_LINE_AND_CHECK
 
         //header line
-        CHECK_FILE_END
-        ++line_reader;
+		READ_ONE_LINE_AND_CHECK
+		
         std::string& line = line_reader.GetLine();
 		m_Headers.push_back(line.c_str(), line.size());
 		m_Headers.push_back('\0');
@@ -259,8 +256,7 @@ void DbInfo::LoadHeaders()
   if (status) goto parsing_error;
 
         // sequence info
-        CHECK_FILE_END
-        ++line_reader;
+		READ_ONE_LINE_AND_CHECK
         header_line.ChangeLine(&line_reader.GetLine());
         line_number = line_reader.GetCurrentLineNumber();
         // gi
@@ -281,12 +277,10 @@ void DbInfo::LoadHeaders()
         m_SequenceInfos.push_back(seqinfo);
     }
 	
-	CHECK_FILE_END
-	++line_reader;
+	READ_ONE_LINE_AND_CHECK
 	
 #define READ_DATE_ITEM(item) \
-  CHECK_FILE_END \
-  ++line_reader; \
+  READ_ONE_LINE_AND_CHECK \
   header_line.ChangeLine(&line_reader.GetLine()); \
   line_number = line_reader.GetCurrentLineNumber(); \
   if (!header_line.Pass(kDelim) || !header_line.IsActive()) goto parsing_error; \
@@ -427,6 +421,8 @@ bool DbInfo::IsAmbigNucl(unsigned char c)
     return c > 3;
 }
 
+#include <iostream>
+
 void DbInfo::AddOneSeq(Sequence& subject)
 {
     SeqInfo seqinfo;
@@ -463,9 +459,9 @@ void DbInfo::BuildDbInfo()
     StreamLineReader line_reader(m_DatabaseName);
     Sequence subject;
 
-    while (!line_reader.AtEof())
+    while (1)
     {
-        subject.ReadOneSeq(line_reader);
+        if (subject.ReadOneSeq(line_reader) == -1) break;
         AddOneSeq(subject);
     }
 

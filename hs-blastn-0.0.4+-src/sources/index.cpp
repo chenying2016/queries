@@ -205,7 +205,7 @@ void FMIndex::RestoreSa()
     GB = GB << 30;
     double gb = 1.0 * size / GB;
     //clog << "\tLoading " << name << ", size = " << gb << " GB\n";
-    fprintf(stderr, "\tLoading %s, size = %.1lfGB\n", name, gb);
+    fprintf(stderr, "\tLoading %s, size = %.1gGB\n", name, gb);
 
 	sa = (Uint8*)cy_utility::MemoryAllocator::__malloc(size);
 	cy_utility::FileOperator::read_file(index_build_name, name, file, sa, size);
@@ -392,7 +392,7 @@ void FMIndex::RestoreBwt2()
     Uint8 GB = 1;
     GB = GB << 30;
     double gb = 1.0 * file_size / GB;
-    fprintf(stderr, "\tLoading %s, size = %.1lfGB\n", name, gb);
+    fprintf(stderr, "\tLoading %s, size = %.1gGB\n", name, gb);
 
 	src = (char*)cy_utility::MemoryAllocator::__malloc(file_size);
 	cy_utility::FileOperator::read_file(index_build_name, name, bwt_file, src, file_size);

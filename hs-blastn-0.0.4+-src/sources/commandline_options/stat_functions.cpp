@@ -796,6 +796,7 @@ s_BlastFindValidKarlinBlk(Blast_KarlinBlk** kbp_in,
 
 	for (i = 0; i < query_info->Size() * 2; ++i)
 	{
+		ASSERT(s_BlastKarlinBlkIsValid(kbp_in[i]) == query_info->contexts[i].is_valid);
 		if (s_BlastKarlinBlkIsValid(kbp_in[i]))
 		{
 			*kbp_ret = kbp_in[i];
@@ -826,6 +827,7 @@ s_BlastFindSmallestLambda(Blast_KarlinBlk** kbp_in,
     ASSERT(kbp_in && query_info);
 
     for (i = 0; i < query_info->Size() * 2; i++) {
+		ASSERT(s_BlastKarlinBlkIsValid(kbp_in[i]) == query_info->contexts[i].is_valid);
         if (s_BlastKarlinBlkIsValid(kbp_in[i])) {
             if (min_lambda > kbp_in[i]->Lambda)
             {
@@ -2133,6 +2135,7 @@ Int2 BlastScoreBlk::ScoreBlkKbpGappedCalc(const BlastScoringOptions* scoring_opt
 	for (i = 0; i < 2; ++i)
 	{
 	    Int4 j = 2 * index + i;
+		if (query_blk->contexts[j].is_valid == FALSE) continue;
 
 	    if (kbp[j] == NULL) continue;
 
@@ -2197,14 +2200,15 @@ Int2 BlastScoreBlk::ScoreBlkKbpUngappedCalc()
 
 	    if (loop_status)
 	    {
-		fprintf(stderr, "[%s] Could not calculate ungapped Karlin-Altschul parameters due "
-		"to an invalid query sequence. Please verify the "
-		"query sequence(s) and/or filtering options.\n", __func__);
+			query_blk->contexts[context].is_valid = FALSE;
+			fprintf(stderr, "[%s] Warning: Could not calculate ungapped Karlin-Altschul parameters due "
+							"to an invalid query sequence. Please verify the "
+							"query sequence(s) and/or filtering options.\n", __func__);
 
-		sfp[context] = Blast_ScoreFreqFree(sfp[context]);
-		kbp[context] = Blast_KarlinBlkFree(kbp[context]);
+			sfp[context] = Blast_ScoreFreqFree(sfp[context]);
+			kbp[context] = Blast_KarlinBlkFree(kbp[context]);
 
-		continue;
+			continue;
 	    }
 	    valid_context = TRUE;
 	}
@@ -2465,7 +2469,7 @@ Int2 BlastScoreBlk::BLAST_CalcEffLength(
 
 		kbp_tmp = kbp_ptr[index];
 
-		if (kbp_tmp != NULL && query_length > 0)
+		if (query_blk->contexts[index].is_valid && kbp_tmp != NULL && query_length > 0)
 		{
 			Blast_GetNuclAlphaBeta(scoring_options->reward,
 					scoring_options->penalty, scoring_options->gap_open,

@@ -51,10 +51,10 @@ private:
 public:
     void Print();
     void Clear();
-    SIZE_TYPE ReadOneSeq(StreamLineReader& line_reader);
+    int64_t ReadOneSeq(StreamLineReader& line_reader);
     SEQUENCE_TYPE& GetHeader();
     SEQUENCE_TYPE& GetSequence();
-    SIZE_TYPE      GetSeqLength();
+    int64_t      GetSeqLength();
     void ToUpperCase();
 };
 

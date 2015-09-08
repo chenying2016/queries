@@ -193,7 +193,7 @@ Sequence::GetSequence()
     return org_sequence;
 }
 
-FastaReader::SIZE_TYPE
+int64_t
 Sequence::GetSeqLength()
 {
     return org_sequence.size();
@@ -213,16 +213,15 @@ void Sequence::ToUpperCase()
 	}
 }
 
-Sequence::SIZE_TYPE
+int64_t
 Sequence::ReadOneSeq(StreamLineReader& line_reader)
 {
 #define __check_comment_line(c) ((c) == '#' || (c) == '!')
     Clear();
     bool need_defline = true;
 
-    while (!line_reader.AtEof())
+    while (++line_reader)
     {
-        ++line_reader;
         FastaReader::SetLineNumber(line_reader.GetCurrentLineNumber());
         STRING_TYPE& line = line_reader.GetLine();
         if (FastaReader::IsEmptyLine(line)) continue;
@@ -244,7 +243,13 @@ Sequence::ReadOneSeq(StreamLineReader& line_reader)
         }
         else if (c == '+')
         {
-            ++line_reader;
+            if (!(++line_reader))
+			{
+				cerr << FastaReader::kClassName 
+					 << " Fatal Error: Quality score line is missing at around line "
+					 << FastaReader::line_number << endl;
+				exit(1);
+			}
             break;
         }
         else if (__check_comment_line(c))
@@ -272,5 +277,6 @@ Sequence::ReadOneSeq(StreamLineReader& line_reader)
         exit(1);
     }
 
+	if (header.size() == 0 && org_sequence.size() == 0) return -1;
     return org_sequence.size();
 }

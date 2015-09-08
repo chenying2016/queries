@@ -128,14 +128,14 @@ Int4 QueryInfo::GetQueryBatch(int num_threads)
     QueryOffset offset;
 	offset.result_offset = 0;
 	offset.num_alignments = 0;
-    Sequence::SIZE_TYPE max_l = 0;
+    int64_t max_l = 0;
 	
 	const Int4 max_num_queries = kMaxNumQueries * num_threads;
 	const Int4 max_queries_length = kMaxQueriesLength * num_threads;
     
-    while (!line_reader->AtEof() && num_queries < max_num_queries && tot_len < max_queries_length)
+    while (num_queries < max_num_queries && tot_len < max_queries_length)
     {
-        query.ReadOneSeq(*line_reader);
+        if (query.ReadOneSeq(*line_reader) == -1) break;
 		if (query.GetSeqLength() == 0) continue;
 		query.ToUpperCase();
         
@@ -168,6 +168,7 @@ void QueryInfo::MakeBlastnaQuery()
     contexts.clear();
     blastna_query.push_back(QUERY_DELIMITER);
     ContextInfo cinfo;
+	cinfo.is_valid = true;
     Int4 offset;
     Int4 len;
     Int4 i, j;
@@ -182,6 +183,9 @@ void QueryInfo::MakeBlastnaQuery()
     {
         offset = query_offsets[i].query_offset;
         len = query_offsets[i].query_length;
+		
+		cinfo.is_valid = true;
+		if (len == 0) cinfo.is_valid = false;
         
         for (j = 0; j < len; ++j)
         {
@@ -227,6 +231,7 @@ void QueryInfo::GetScanRanges(Int4 seed_size, CSymDustMasker* dust_masker, CSeqM
     Int4 i;
     for (i = 0; i < num_queries; ++i)
     {
+		if (contexts[i*2].is_valid == false) continue;
         Uint4 offset = contexts[i<<1].offset;
         Uint4 len = query_offsets[i].query_length;
         char* q = &org_queries[query_offsets[i].query_offset];

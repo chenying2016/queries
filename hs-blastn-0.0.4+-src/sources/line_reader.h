@@ -1,68 +1,116 @@
 #ifndef LINE_READER_H_
 #define LINE_READER_H_
 
-#include <string>
-#include <cstdlib>
-#include <cassert>
-#include <cstring>
 #include <iostream>
-#include <cstdio>
-#include <stdint.h>
-#include <stdarg.h>
+#include <fstream>
+#include <string>
+#include <cassert>
+#include <istream>
+#include <algorithm>
+#include <iterator>
+#include <cstdlib>
 
-#include "utility.h"
+using std::ifstream;
+using std::cout;
+using std::cin;
+using std::clog;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::istream;
 
-// for reading files, read one line at a time
+class LineIterator
+{
+public:
+    typedef std::input_iterator_tag iterator_tag;
+    typedef string                  value_type;
+    typedef std::ptrdiff_t          difference_type;
+    typedef const string*           pointer;
+    typedef const string&           reference;
+
+public:
+    LineIterator() : in(NULL), isValid(false) {}
+    LineIterator(istream& s) : in(&s), isValid((*in) ? true : false) {}
+    reference operator*() { return line; }
+    pointer operator->() const { return &line; }
+    LineIterator operator++()
+    {
+        read();
+        return *this;
+    }
+    LineIterator operator++(int)
+    {
+        LineIterator tmp = *this;
+        read();
+        return tmp;
+    }
+
+    void reset(istream* newStream)
+    {
+        in = newStream;
+        if (*in)
+            isValid = true;
+    }
+
+    bool eof()
+    {
+        return !isValid;
+    }
+
+    void clear()
+    {
+        in = NULL;
+        line.clear();
+        isValid = false;
+    }
+
+    string& getString()
+    {
+        return line;
+    }
+
+private:
+    void read()
+    {
+        if (*in) getline(*in, line);
+        isValid = (*in) ? true : false;
+    }
+
+private:
+    istream* in;
+    string line;
+    bool isValid;
+};
+
 class StreamLineReader
 {
 public:
-    typedef std::string STRING_TYPE;
-	typedef cy_utility::Types::SIZE_TYPE SIZE_TYPE;
+    typedef LineIterator::value_type STRING_TYPE;
+    typedef STRING_TYPE::size_type   SIZE_TYPE;
 
-private:
-    static const SIZE_TYPE kBufferSize = ((SIZE_TYPE)1) << 20;
     static const char* kClassName;
 
-	// The current line
-    STRING_TYPE m_CurrentLine;
-	// File buffer
-    char        m_Buffer[kBufferSize];
-	// Buffer size
-    SIZE_TYPE   m_BufferSize;
-	// Current position in buffer
-    SIZE_TYPE   m_CurrentPosition;
-	// How many bytes to be read in
-    SIZE_TYPE   m_BytesToRead;
-	// The number of current line
-    SIZE_TYPE   m_CurrentLineNumber;
-	// Name of file
-    const char* m_FileName;
-	// File
-    FILE*       m_File;
-	// This line is not dealt (because we come across the header of the next sequence)
-    bool        m_UngetLine;
-
-private:
-    SIZE_TYPE ReadBuffer();
-
 public:
-	// Advance to the next line
-    bool operator++(void);
-	// Return the current line
-    STRING_TYPE& GetLine();
-	// This line has not been processed
-    void UngetLine();
-    StreamLineReader(const char* file_name);
+    StreamLineReader(const char* initFileName);
     ~StreamLineReader();
-	// End of file
+
+    bool operator++(void);
+    STRING_TYPE& GetLine();
+    void UngetLine();
     bool AtEof();
-	// Return the line number
     SIZE_TYPE GetCurrentLineNumber();
-	// Change the file
-    void ChangeFileName(const char* new_file_name);
+    void ChangeFileName(const char* newFileName);
     void OpenFile();
     void CloseFile();
     void Clear();
+
+private:
+    LineIterator lineIterator;
+    STRING_TYPE* currentLine;
+    SIZE_TYPE    currentLineNumber;
+    const char*  fileName;
+    ifstream     file;
+    bool         ungetLine;
 };
 
 #endif // LINE_READER_H_

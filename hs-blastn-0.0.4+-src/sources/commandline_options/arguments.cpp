@@ -344,6 +344,7 @@ void CmdLineArgs::InitialArgList()
     cmd_args.push_back(arg);
     
     FillSingleCmeLineArg(arg, FloatArgDealFunction, kPercentIdentity, &hit_options->percent_identity); ///
+	cmd_args.push_back(arg);
 
     FillSingleCmeLineArg(arg, Int4ArgDealFunction, kNumThreads, &running_options->num_threads);
     cmd_args.push_back(arg);

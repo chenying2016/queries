@@ -283,6 +283,11 @@ Int2 BlastHitSavingOptionsValidate(const BlastHitSavingOptions* options)
                 __func__);
         exit(1);        
     }
+	if (options->percent_identity < 0.0 || options->percent_identity > 100.0)
+	{
+		fprintf(stderr, "[%s] Error: Argument \"perc_identity\". Illegal value, expected [0,100]: \'%g\'\n", __func__, options->percent_identity);
+		exit(1);
+	}
     
     return 1;
 }
