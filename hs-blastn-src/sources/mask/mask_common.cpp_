@@ -1,0 +1,63 @@
+#include "mask_common.h"
+
+void ComplementMaskedLocations(Uint4 len,
+								std::vector< std::pair<Uint4, Uint4> >& masked_locs,
+								std::vector< std::pair<Uint4, Uint4> >& unmasked_locs)
+{
+    unmasked_locs.clear();
+    
+    bool first = true; // specifies beginning of query
+    bool last_interval_open = true;
+    Uint4 start_offset, end_offset, filter_start, filter_end;
+    Uint4 left = 0, right; // used for left/right extent of a region
+    
+    start_offset = 0;
+    end_offset = len - 1;
+    ASSERT(start_offset <= end_offset);
+    
+    // const mask iterator
+    std::vector<std::pair<Uint4, Uint4> >::const_iterator cmiter;
+    for (cmiter = masked_locs.begin(); cmiter != masked_locs.end(); ++cmiter)
+    {
+        const std::pair<Uint4, Uint4>& seq_range = *cmiter;
+        filter_start = start_offset + seq_range.first;
+        filter_end = start_offset + seq_range.second;
+        
+        if (first)
+        {
+            last_interval_open = true;
+            first = false;
+            
+            if (filter_start > start_offset)
+                left = start_offset; //beginning of sequence not filtered
+            else
+            {
+                // beginning of sequence filtered
+                left = filter_end + 1;
+                continue;
+            }
+        }
+        
+        right = filter_start - 1;
+        unmasked_locs.push_back(std::make_pair(left, right));
+        
+        if (filter_end >= end_offset)
+        {
+            // last masked region at end of sequence
+            last_interval_open = false;
+            break;
+        }
+        else
+        {
+            left = filter_end + 1;
+        }
+    }
+    
+    if (last_interval_open)
+    {
+        right = end_offset;
+        unmasked_locs.push_back(std::make_pair(left, right));
+    }
+}
+
+std::string kEmptyStr = "";

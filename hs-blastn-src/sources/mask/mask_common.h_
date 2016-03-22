@@ -1,0 +1,126 @@
+#ifndef MASK_COMMON_H
+#define MASK_COMMON_H
+
+#include "def.h"
+
+#define BEGIN_NCBI_SCOPE
+#define END_NCBI_SCOPE
+#define NCBI_XALGODUSTMASK_EXPORT
+#define NCBI_XALGOWINMASK_EXPORT
+#define NCBI_XNCBI_EXPORT
+
+#include <fstream>
+#include <iostream>
+#include <strstream>
+
+#define CNcbiIfstream std::ifstream 
+#define CNcbiOstrstream std::ostrstream
+#define CNcbiIstream std::istream
+#define CNcbiOstream std::ostream
+#define NcbiCout std::cout
+#define CNcbiOfstream std::ofstream
+#define Error std::cerr
+
+void ComplementMaskedLocations(Uint4 len,
+							   std::vector< std::pair<Uint4, Uint4> >& masked_locs,
+							   std::vector< std::pair<Uint4, Uint4> >& unmasked_locs);
+
+#ifndef TSeqPos
+typedef Uint4 TSeqPos;
+#endif
+
+using std::pair;
+using std::make_pair;
+
+#include <string>
+using std::string;
+
+#include <list>
+using std::list;
+
+#include <memory>
+using std::auto_ptr;
+
+#include <vector>
+using std::vector;
+
+typedef std::size_t SIZE_TYPE;
+
+//----------------------------------------------------------
+namespace objects
+{
+class CSeqVector
+{
+public:
+    typedef char value_type;
+    typedef TSeqPos size_type;
+    typedef Int4 difference_type;
+    typedef std::random_access_iterator_tag iterator_category;
+    typedef const value_type* pointer;
+    typedef const value_type& reference;
+    typedef const value_type* const_iterator;
+    
+private:
+    pointer sequence;
+    size_type sequence_length;
+    
+public:
+    CSeqVector(pointer arg_sequence, size_type arg_sequence_length)
+    {
+        sequence = arg_sequence;
+        sequence_length = arg_sequence_length;
+    }
+    
+    ~CSeqVector() {}
+    
+    value_type operator[](TSeqPos pos) const
+    {
+        return sequence[pos];
+    }
+    
+    bool empty() const
+    {
+        return sequence_length == 0;
+    }
+    
+    TSeqPos size() const
+    {
+        return sequence_length;
+    }
+    
+    const_iterator begin() const
+    {
+        return sequence;
+    }
+    
+    const_iterator end() const
+    {
+        return sequence + sequence_length;
+    }    
+};
+}
+
+using objects::CSeqVector;
+
+class CObject
+{
+	
+};
+
+extern std::string kEmptyStr;
+
+#define print_warning(out, msg) \
+ do { \
+	out << "[" << __func__ << ", " << __LINE__ << "] " \
+		<< msg << "\n"; \
+ } while (0)
+
+#define error_and_exit(msg) \
+  do { \
+		print_warning(std::cerr, msg); \
+	    exit(1); \
+  } while (0)
+
+#  define _TRACE(message)                               ((void)0)
+
+#endif // MASK_COMMON_H

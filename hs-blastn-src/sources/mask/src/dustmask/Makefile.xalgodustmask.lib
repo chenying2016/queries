@@ -1,0 +1,17 @@
+# $Id: Makefile.xalgodustmask.lib 427427 2014-02-20 13:40:13Z gouriano $
+
+WATCHERS = morgulis
+
+ASN_DEP = seqset
+
+LIB = xalgodustmask
+
+SRC = symdust
+
+CXXFLAGS = $(FAST_CXXFLAGS)
+LDFLAGS  = $(FAST_LDFLAGS)
+
+
+
+USES_LIBRARIES =  \
+    $(DL_LIBS) $(SOBJMGR_LIBS)
