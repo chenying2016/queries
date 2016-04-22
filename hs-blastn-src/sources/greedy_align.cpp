@@ -213,7 +213,7 @@ int SGreedyAlignMem::MemoryAlloc(const BlastScoringParameters* score_params,
         last_seq2_off_affine[i] = last_seq2_off_affine[i-1] + 2 * max_d_1 + 6;
       }
 
-      if (!last_seq2_off_affine || last_seq2_off_affine[0]) return 1;
+      if (!last_seq2_off_affine || !last_seq2_off_affine[0]) return 1;
     }
 
     max_score = (Int4*)malloc(sizeof(Int4) * (arg_max_d + 1 + d_diff));

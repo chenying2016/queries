@@ -2147,7 +2147,7 @@ Int2 BlastScoreBlk::ScoreBlkKbpGappedCalc(const BlastScoringOptions* scoring_opt
 						              scoring_options->reward,
 							      scoring_options->penalty,
 							      kbp[j], &round_down);
-	    if (status) return status;
+	    if (status) exit(1); //return status;
 	}
     }
 
