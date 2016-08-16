@@ -44,7 +44,7 @@ How to use
     
 2. build a blastdb
  ```shell
-    makeblastdb -in hg38.fa -input-type fasta -dbtype nucl
+    makeblastdb -in hg38.fa -input_type fasta -dbtype nucl
 ```
 
 3. Generate a frequency counts file for the database using the WindowMasker
