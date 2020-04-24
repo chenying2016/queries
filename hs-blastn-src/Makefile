@@ -1,300 +1,423 @@
-OBJECT_DIR      := objs
+# boilermake: A reusable, but flexible, boilerplate Makefile.
+#
+# Copyright 2008, 2009, 2010 Dan Moulding, Alan T. DeKok
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#EXTRA_CFLAGS    := -pg -g -ggdb
-EXTRA_CFLAGS    := -O3
-EXTRA_CFLAGS    += -Wall -Wno-unused -D__STDC_FORMAT_MACROS
-LDFLAGS         :=  -pthread
-src-y           := ./sources/ ./sources/commandline_options/ ./sources/mask/src/dustmask/ ./sources/mask/src/winmask/ ./sources/mask/
-inc-y           := ./sources/ ./sources/commandline_options/ ./sources/mask/include/dustmask/ ./sources/mask/include/winmask/ ./sources/mask/
-DEFINES         := -DFLAG1 -UFLAG2 -DPROJECT='"hs-blastn"'
-TARGET_TYPE     := EXE
-TARGET          := hs-blastn
-SOURCE_SUFFIXES := cpp c
+# Caution: Don't edit this Makefile! Create your own main.mk and other
+#          submakefiles, which will be included by this Makefile.
+#          Only edit this if you need to modify boilermake's behavior (fix
+#          bugs, add features, etc).
 
-#==============================================================================
-#          Do not modify the following text.
-#==============================================================================
+# Note: Parameterized "functions" in this makefile that are marked with
+#       "USE WITH EVAL" are only useful in conjuction with eval. This is
+#       because those functions result in a block of Makefile syntax that must
+#       be evaluated after expansion. Since they must be used with eval, most
+#       instances of "$" within them need to be escaped with a second "$" to
+#       accomodate the double expansion that occurs when eval is invoked.
+
+# ADD_CLEAN_RULE - Parameterized "function" that adds a new rule and phony
+#   target for cleaning the specified target (removing its build-generated
+#   files).
+#
+#   USE WITH EVAL
+#
+define ADD_CLEAN_RULE
+    clean: clean_${1}
+    .PHONY: clean_${1}
+    clean_${1}:
+	$$(strip rm -f ${TARGET_DIR}/${1} $${${1}_OBJS:%.o=%.[doP]})
+	$${${1}_POSTCLEAN}
+endef
+
+# ADD_OBJECT_RULE - Parameterized "function" that adds a pattern rule for
+#   building object files from source files with the filename extension
+#   specified in the second argument. The first argument must be the name of the
+#   base directory where the object files should reside (such that the portion
+#   of the path after the base directory will match the path to corresponding
+#   source files). The third argument must contain the rules used to compile the
+#   source files into object code form.
+#
+#   USE WITH EVAL
+#
+define ADD_OBJECT_RULE
+${1}/%.o: ${2}
+	${3}
+endef
+
+# ADD_TARGET_RULE - Parameterized "function" that adds a new target to the
+#   Makefile. The target may be an executable or a library. The two allowable
+#   types of targets are distinguished based on the name: library targets must
+#   end with the traditional ".a" extension.
+#
+#   USE WITH EVAL
+#
+define ADD_TARGET_RULE
+    ifeq "$$(suffix ${1})" ".a"
+        # Add a target for creating a static library.
+        $${TARGET_DIR}/${1}: $${${1}_OBJS}
+	    @mkdir -p $$(dir $$@)
+	    $$(strip $${AR} $${ARFLAGS} $$@ $${${1}_OBJS})
+	    $${${1}_POSTMAKE}
+    else
+    ifeq "$$(suffix ${1})" ".jar"
+        # Add a target for copying files.  Actually, just untars the files, kind
+        # of ugly, but the only way I could discover to get the lib/ files installed.
+        $${TARGET_DIR}/${1}: $${${1}}
+	    @mkdir -p $$(dir $$@)
+	    $$(strip tar -C $$(dir $$@) -xf $${${1}_SOURCES})
+    else
+        # Add a target for linking an executable. First, attempt to select the
+        # appropriate front-end to use for linking. This might not choose the
+        # right one (e.g. if linking with a C++ static library, but all other
+        # sources are C sources), so the user makefile is allowed to specify a
+        # linker to be used for each target.
+        ifeq "$$(strip $${${1}_LINKER})" ""
+            # No linker was explicitly specified to be used for this target. If
+            # there are any C++ sources for this target, use the C++ compiler.
+            # For all other targets, default to using the C compiler.
+            ifneq "$$(strip $$(filter $${CXX_SRC_EXTS},$${${1}_SOURCES}))" ""
+                ${1}_LINKER = $${CXX}
+            else
+                ${1}_LINKER = $${CC}
+            endif
+        endif
+
+        $${TARGET_DIR}/${1}: $${${1}_OBJS} $${${1}_PREREQS}
+	    @mkdir -p $$(dir $$@)
+	    $$(strip $${${1}_LINKER} -o $$@ $${LDFLAGS} $${${1}_LDFLAGS} \
+	        $${${1}_OBJS} $${LDLIBS} $${${1}_LDLIBS}) $${LDFLAGS}
+	    $${${1}_POSTMAKE}
+    endif
+    endif
+endef
+
+# CANONICAL_PATH - Given one or more paths, converts the paths to the canonical
+#   form. The canonical form is the path, relative to the project's top-level
+#   directory (the directory from which "make" is run), and without
+#   any "./" or "../" sequences. For paths that are not  located below the
+#   top-level directory, the canonical form is the absolute path (i.e. from
+#   the root of the filesystem) also without "./" or "../" sequences.
+define CANONICAL_PATH
+$(patsubst ${CURDIR}/%,%,$(abspath ${1}))
+endef
+
+# COMPILE_C_CMDS - Commands for compiling C source code.
+define COMPILE_C_CMDS
+	@mkdir -p $(dir $@)
+	$(strip ${CC} -o $@ -c -MD ${CFLAGS} ${SRC_CFLAGS} ${INCDIRS} \
+	    ${SRC_INCDIRS} ${SRC_DEFS} ${DEFS} $<)
+	@cp ${@:%$(suffix $@)=%.d} ${@:%$(suffix $@)=%.P}; \
+	 sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	     -e '/^$$/ d' -e 's/$$/ :/' < ${@:%$(suffix $@)=%.d} \
+	     >> ${@:%$(suffix $@)=%.P}; \
+	 rm -f ${@:%$(suffix $@)=%.d}
+endef
+
+# COMPILE_CXX_CMDS - Commands for compiling C++ source code.
+define COMPILE_CXX_CMDS
+	@mkdir -p $(dir $@)
+	$(strip ${CXX} -o $@ -c -MD ${CXXFLAGS} ${SRC_CXXFLAGS} ${INCDIRS} \
+	    ${SRC_INCDIRS} ${SRC_DEFS} ${DEFS} $<)
+	@cp ${@:%$(suffix $@)=%.d} ${@:%$(suffix $@)=%.P}; \
+	 sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	     -e '/^$$/ d' -e 's/$$/ :/' < ${@:%$(suffix $@)=%.d} \
+	     >> ${@:%$(suffix $@)=%.P}; \
+	 rm -f ${@:%$(suffix $@)=%.d}
+endef
+
+# INCLUDE_SUBMAKEFILE - Parameterized "function" that includes a new
+#   "submakefile" fragment into the overall Makefile. It also recursively
+#   includes all submakefiles of the specified submakefile fragment.
+#
+#   USE WITH EVAL
+#
+define INCLUDE_SUBMAKEFILE
+    # Initialize all variables that can be defined by a makefile fragment, then
+    # include the specified makefile fragment.
+    TARGET        :=
+    TGT_CFLAGS    :=
+    TGT_CXXFLAGS  :=
+    TGT_DEFS      :=
+    TGT_INCDIRS   :=
+    TGT_LDFLAGS   :=
+    TGT_LDLIBS    :=
+    TGT_LINKER    :=
+    TGT_POSTCLEAN :=
+    TGT_POSTMAKE  :=
+    TGT_PREREQS   :=
+
+    SOURCES       :=
+    SRC_CFLAGS    :=
+    SRC_CXXFLAGS  :=
+    SRC_DEFS      :=
+    SRC_INCDIRS   :=
+
+    SUBMAKEFILES  :=
+
+    # A directory stack is maintained so that the correct paths are used as we
+    # recursively include all submakefiles. Get the makefile's directory and
+    # push it onto the stack.
+    DIR := $(call CANONICAL_PATH,$(dir ${1}))
+    DIR_STACK := $$(call PUSH,$${DIR_STACK},$${DIR})
+
+    include ${1}
+
+    # Initialize internal local variables.
+    OBJS :=
+
+    # Determine which target this makefile's variables apply to. A stack is
+    # used to keep track of which target is the "current" target as we
+    # recursively include other submakefiles.
+    ifneq "$$(strip $${TARGET})" ""
+        # This makefile defined a new target. Target variables defined by this
+        # makefile apply to this new target. Initialize the target's variables.
+        TGT := $$(strip $${TARGET})
+        ALL_TGTS += $${TGT}
+        $${TGT}_CFLAGS    := $${TGT_CFLAGS}
+        $${TGT}_CXXFLAGS  := $${TGT_CXXFLAGS}
+        $${TGT}_DEFS      := $${TGT_DEFS}
+        $${TGT}_DEPS      :=
+        TGT_INCDIRS       := $$(call QUALIFY_PATH,$${DIR},$${TGT_INCDIRS})
+        TGT_INCDIRS       := $$(call CANONICAL_PATH,$${TGT_INCDIRS})
+        $${TGT}_INCDIRS   := $${TGT_INCDIRS}
+        $${TGT}_LDFLAGS   := $${TGT_LDFLAGS}
+        $${TGT}_LDLIBS    := $${TGT_LDLIBS}
+        $${TGT}_LINKER    := $${TGT_LINKER}
+        $${TGT}_OBJS      :=
+        $${TGT}_POSTCLEAN := $${TGT_POSTCLEAN}
+        $${TGT}_POSTMAKE  := $${TGT_POSTMAKE}
+        $${TGT}_PREREQS   := $$(addprefix $${TARGET_DIR}/,$${TGT_PREREQS})
+        $${TGT}_SOURCES   :=
+    else
+        # The values defined by this makefile apply to the the "current" target
+        # as determined by which target is at the top of the stack.
+        TGT := $$(strip $$(call PEEK,$${TGT_STACK}))
+        $${TGT}_CFLAGS    += $${TGT_CFLAGS}
+        $${TGT}_CXXFLAGS  += $${TGT_CXXFLAGS}
+        $${TGT}_DEFS      += $${TGT_DEFS}
+        TGT_INCDIRS       := $$(call QUALIFY_PATH,$${DIR},$${TGT_INCDIRS})
+        TGT_INCDIRS       := $$(call CANONICAL_PATH,$${TGT_INCDIRS})
+        $${TGT}_INCDIRS   += $${TGT_INCDIRS}
+        $${TGT}_LDFLAGS   += $${TGT_LDFLAGS}
+        $${TGT}_LDLIBS    += $${TGT_LDLIBS}
+        $${TGT}_POSTCLEAN += $${TGT_POSTCLEAN}
+        $${TGT}_POSTMAKE  += $${TGT_POSTMAKE}
+        $${TGT}_PREREQS   += $${TGT_PREREQS}
+    endif
+
+    # Push the current target onto the target stack.
+    TGT_STACK := $$(call PUSH,$${TGT_STACK},$${TGT})
+
+    ifneq "$$(strip $${SOURCES})" ""
+        # This makefile builds one or more objects from source. Validate the
+        # specified sources against the supported source file types.
+        BAD_SRCS := $$(strip $$(filter-out $${ALL_SRC_EXTS},$${SOURCES}))
+        ifneq "$${BAD_SRCS}" ""
+            $$(error Unsupported source file(s) found in ${1} [$${BAD_SRCS}])
+        endif
+
+        # Qualify and canonicalize paths.
+        SOURCES     := $$(call QUALIFY_PATH,$${DIR},$${SOURCES})
+        SOURCES     := $$(call CANONICAL_PATH,$${SOURCES})
+        SRC_INCDIRS := $$(call QUALIFY_PATH,$${DIR},$${SRC_INCDIRS})
+        SRC_INCDIRS := $$(call CANONICAL_PATH,$${SRC_INCDIRS})
+
+        # Save the list of source files for this target.
+        $${TGT}_SOURCES += $${SOURCES}
+
+        # Convert the source file names to their corresponding object file
+        # names.
+        OBJS := $$(addprefix $${BUILD_DIR}/$$(call CANONICAL_PATH,$${TGT})/,\
+                   $$(addsuffix .o,$$(basename $${SOURCES})))
+
+        # Add the objects to the current target's list of objects, and create
+        # target-specific variables for the objects based on any source
+        # variables that were defined.
+        $${TGT}_OBJS += $${OBJS}
+        $${TGT}_DEPS += $${OBJS:%.o=%.P}
+        $${OBJS}: SRC_CFLAGS   := $${$${TGT}_CFLAGS} $${SRC_CFLAGS}
+        $${OBJS}: SRC_CXXFLAGS := $${$${TGT}_CXXFLAGS} $${SRC_CXXFLAGS}
+        $${OBJS}: SRC_DEFS     := $$(addprefix -D,$${$${TGT}_DEFS} $${SRC_DEFS})
+        $${OBJS}: SRC_INCDIRS  := $$(addprefix -I,\
+                                     $${$${TGT}_INCDIRS} $${SRC_INCDIRS})
+    endif
+
+    ifneq "$$(strip $${SUBMAKEFILES})" ""
+        # This makefile has submakefiles. Recursively include them.
+        $$(foreach MK,$${SUBMAKEFILES},\
+           $$(eval $$(call INCLUDE_SUBMAKEFILE,\
+                      $$(call CANONICAL_PATH,\
+                         $$(call QUALIFY_PATH,$${DIR},$${MK})))))
+    endif
+
+    # Reset the "current" target to it's previous value.
+    TGT_STACK := $$(call POP,$${TGT_STACK})
+    TGT := $$(call PEEK,$${TGT_STACK})
+
+    # Reset the "current" directory to it's previous value.
+    DIR_STACK := $$(call POP,$${DIR_STACK})
+    DIR := $$(call PEEK,$${DIR_STACK})
+endef
+
+
+# MIN - Parameterized "function" that results in the minimum lexical value of
+#   the two values given.
+define MIN
+$(firstword $(sort ${1} ${2}))
+endef
+
+# PEEK - Parameterized "function" that results in the value at the top of the
+#   specified colon-delimited stack.
+define PEEK
+$(lastword $(subst :, ,${1}))
+endef
+
+# POP - Parameterized "function" that pops the top value off of the specified
+#   colon-delimited stack, and results in the new value of the stack. Note that
+#   the popped value cannot be obtained using this function; use peek for that.
+define POP
+${1:%:$(lastword $(subst :, ,${1}))=%}
+endef
+
+# PUSH - Parameterized "function" that pushes a value onto the specified colon-
+#   delimited stack, and results in the new value of the stack.
+define PUSH
+${2:%=${1}:%}
+endef
+
+# QUALIFY_PATH - Given a "root" directory and one or more paths, qualifies the
+#   paths using the "root" directory (i.e. appends the root directory name to
+#   the paths) except for paths that are absolute.
+define QUALIFY_PATH
+$(addprefix ${1}/,$(filter-out /%,${2})) $(filter /%,${2})
+endef
 
 ###############################################################################
 #
-# A FLEXIBLE MAKEFILE TEMPLATE
-#
-# The purpose of implementing this script is help quickly deploy source code
-# tree during initial phase of development. It is designed to manage one whole
-# project from within one single makefile and to be easily adapted to
-# different directory hierarchy by simply setting user configurable variables.
-# This script is expected to be used with gcc toolchains on bash-compatible 
-# shell.
-# 
-# Author: Pan Ruochen <coderelease@163.com>
-# Date:   2012/10/10
+# Start of Makefile Evaluation
 #
 ###############################################################################
 
-#-----------------------------------------------------------------------------------------------------#
-# User configurable variables
-#
-# ====================================================================================================
-# GNU_TOOLCHAIN_PREFIX:   The perfix of gnu toolchain.
-# ====================================================================================================
-# DEFINES:        The compiler flags for macro definitions.
-# EXTRA_CFLAGS:   Any other compiler flags.
-# inc-y:          Header include paths.
-# src-y:          Sources. The items ending with a trailing / are regarded as directories, the others
-#                 are regareded as files. The files with specified suffixes in those directories will
-#                 be automatically involved in compilation.
-# obj-y:          Extra object file list.
-# ucmd_X:         User defined command to generate targets for the prerequisites
-#                 whith the specified suffix X (i.e, X could be c, cpp, etc).
-#
-# EXCLUDE_FILES:  The files that are not included during compilation.
-# OBJECT_DIR:     The directory where object files are output.
-# LD_SCRIPT:      The explicit linker script for linking.
-# LIBS:           The libraries for linking.
-# LDFLAGS:        All other linker flags.
-# ====================================================================================================
-# STRIP_UNUSED:   Remove all unreferenced functions and data during linking.
-# SOURCE_SUFFIXES:The suffixes of source files.
-# OBJECT_SUFFIX:  The suffix of object files.
-# DEPEND_SUFFIX:  The suffix of dependency files.
-# TARGET_TYPE:    The target type which can be application, shared object, archive library etc.
-# TARGET:         The path name of the final target.
-# IGNORE_ME:      The changes of this script will not cause remaking of any target.
-# CENTRALIZED_SINGLE_DEPEND_FILE:  Use one single dependency file instead of 
-#                                  generating one dependency file for each source file.
-# TARGET_DEPENDS: The dependent targets by the final target.
-# VERBOSE_COMMAND:Display verbose commands instead of short commands during the make process.
-#-----------------------------------------------------------------------------------------------------#
-
-#****************************************************************************#
-#  PART II: FUNCTIONALITY IMPLEMENTATIONS                                    #
-#****************************************************************************#
-
-# Quiet commands
-ifeq ($(VERBOSE_COMMAND),)
-Q           = @
-Q_compile   = @echo '  CC     $$< => $$@';
-Q_link      = @echo '  LD     $@';
-Q_ar        = @echo '  AR     $@';
-Q_mkdir     =  echo '  MKDIR  $1';
-Q_clean     = @echo '  CLEAN';
-Q_distclean = @echo '  DISTCLEAN';
+# Older versions of GNU Make lack capabilities needed by boilermake.
+# With older versions, "make" may simply output "nothing to do", likely leading
+# to confusion. To avoid this, check the version of GNU make up-front and
+# inform the user if their version of make doesn't meet the minimum required.
+MIN_MAKE_VERSION := 3.81
+MIN_MAKE_VER_MSG := boilermake requires GNU Make ${MIN_MAKE_VERSION} or greater
+ifeq "${MAKE_VERSION}" ""
+    $(info GNU Make not detected)
+    $(error ${MIN_MAKE_VER_MSG})
+endif
+ifneq "${MIN_MAKE_VERSION}" "$(call MIN,${MIN_MAKE_VERSION},${MAKE_VERSION})"
+    $(info This is GNU Make version ${MAKE_VERSION})
+    $(error ${MIN_MAKE_VER_MSG})
 endif
 
-O := $(if $(OBJECT_SUFFIX),$(OBJECT_SUFFIX),o)
-D := $(if $(DEPEND_SUFFIX),$(DEPEND_SUFFIX),d)
+# Define the source file extensions that we know how to handle.
+C_SRC_EXTS := %.c
+CXX_SRC_EXTS := %.C %.cc %.cp %.cpp %.CPP %.cxx %.c++
+JAVA_EXTS    := %.jar %.tar
+ALL_SRC_EXTS := ${C_SRC_EXTS} ${CXX_SRC_EXTS} ${JAVA_EXTS}
 
-ifndef SOURCE_SUFFIXES
-SOURCE_SUFFIXES := c cpp cc cxx S s
+# Initialize global variables.
+ALL_TGTS :=
+DEFS :=
+DIR_STACK :=
+INCDIRS :=
+TGT_STACK :=
+
+# (BPW) Discover our OS and architecture.  These are used to set the BUILD_DIR and TARGET_DIR to
+# something more useful than 'build' and '.'.
+OSTYPE      := $(shell echo `uname`)
+OSVERSION   := $(shell echo `uname -r`)
+MACHINETYPE := $(shell echo `uname -m`)
+
+ifeq (${MACHINETYPE}, x86_64)
+  MACHINETYPE = amd64
 endif
 
-GCC    := $(GNU_TOOLCHAIN_PREFIX)gcc
+ifeq (${MACHINETYPE}, Power Macintosh)
+  MACHINETYPE = ppc
+endif
 
-src-d = $(filter %/,$(src-y))
-src-f = $(foreach i,$(SOURCE_SUFFIXES),$(filter %.$i,$(src-y)))
+ifeq (${OSTYPE}, SunOS)
+  MACHINETYPE = ${shell echo `uname -p`}
+  ifeq (${MACHINETYPE}, sparc)
+    ifeq (${shell /usr/bin/isainfo -b}, 64)
+      MACHINETYPE = sparc64
+    else
+      MACHINETYPE = sparc32
+    endif
+  endif
+endif
 
-is_equal = $(if $(filter $1,$2),$(filter $2,$1))
+${info Building for '${OSTYPE}' '${OSVERSION}' as '${MACHINETYPE}'}
+#${info Using LD_RUN_PATH '${LD_RUN_PATH}'}
 
-objdir := $(shell echo $(OBJECT_DIR)|sed -e 's:\(\./*\)*::g')
-ifeq ($(objdir),)
-objdir       := ./
+ifeq ($(BUILDDEBUG), 1)
+	CXXFLAGS = -D_GLIBCXX_PARALLEL -pthread -O0 -Wall -g -std=c++11
+	CFLAGS = -D_GLIBCXX_PARALLEL -pthread -O0 -Wall -g -std=gnu99
 else
-objdir       := $(objdir)/
-have_objdir  := y
+	CXXFLAGS = -D_GLIBCXX_PARALLEL -pthread -O3 -Wall -std=c++11 -DNDEBUG
+	CFLAGS = -D_GLIBCXX_PARALLEL -pthread -O3 -Wall -std=gnu99 -DNDEBUG
 endif
 
-## Combine compiler flags togather.
-CFLAGS   = $(foreach i,$(inc-y),-I$i) $(EXTRA_CFLAGS) $(DEFINES)
+LDFLAGS = -pthread -lm -lz -lstdc++
 
-## Output file types:
-##  EXE:  Application
-##  AR:   static library
-##  SO:   shared object
-##  DLL:  dynamic link library
-##  BIN:  raw binary
-TARGET_TYPE := $(strip $(TARGET_TYPE))
-ifeq ($(filter $(TARGET_TYPE),SO DLL AR EXE BIN),)
-$(error Unknown TARGET_TYPE `$(TARGET_TYPE)')
+ifeq ($(OSTYPE), Linux)
+	CXXFLAGS := $(CXXFLAGS) -fopenmp
+	CFLAGS := $(CFLAGS) -fopenmp
+	LDFLAGS := $(LDFLAGS) -fopenmp
 endif
 
-ifneq ($(filter DLL SO,$(TARGET_TYPE)),)
-CFLAGS  += -shared
-LDFLAGS += -shared
-endif
-ifneq ($(STRIP_UNUSED),)
-CFLAGS  += -ffunction-sections -fdata-sections
-LDFLAGS += --gc-sections
-endif
 
-ifeq ($(CENTRALIZED_SINGLE_DEPEND_FILE),)
-CFLAGS += -MMD -MF $$@.$(D) -MT $$@
-else
-single_depend_file := $(objdir)depend
-endif
+# Include the main user-supplied submakefile. This also recursively includes
+# all other user-supplied submakefiles.
+$(eval $(call INCLUDE_SUBMAKEFILE,main.mk))
 
-g_makefile_list = $(if $(IGNORE_ME),,$(MAKEFILE_LIST))
+# Perform post-processing on global variables as needed.
+DEFS := $(addprefix -D,${DEFS})
+INCDIRS := $(addprefix -I,$(call CANONICAL_PATH,${INCDIRS}))
 
-#--------------------------------------------------#
-# Exclude user-specified files from source list.   #
-#  $1 -- The sources list                          #
-#--------------------------------------------------#
-exclude = $(filter-out $(EXCLUDE_FILES),$1)
+# Define the "all" target (which simply builds all user-defined targets) as the
+# default goal.
+.PHONY: all
+all: $(addprefix ${TARGET_DIR}/,${ALL_TGTS}) 
+#     ${TARGET_DIR}/reference_mapping
 
-#----------------------------------------------------------#
-# List files with specified suffix inside the directory.   #
-#  $1 -- The directory                                     #
-#  $2 -- The suffix                                        #
-#----------------------------------------------------------#
-ls = $(wildcard $1*.$2)
+# Add a new target rule for each user-defined target.
+$(foreach TGT,${ALL_TGTS},\
+  $(eval $(call ADD_TARGET_RULE,${TGT})))
 
+# Add pattern rule(s) for creating compiled object code from C source.
+$(foreach TGT,${ALL_TGTS},\
+  $(foreach EXT,${C_SRC_EXTS},\
+    $(eval $(call ADD_OBJECT_RULE,${BUILD_DIR}/$(call CANONICAL_PATH,${TGT}),\
+             ${EXT},$${COMPILE_C_CMDS}))))
 
-#---------------------------------------------#
-# Replace the specified suffixes with $(O).   #
-#  $1 -- The file names                       #
-#  $2 -- The suffixes                         #
-#---------------------------------------------#
-get_object_names = $(strip $(foreach i,$2,$(patsubst %.$i,%.$O,$(filter %.$i,$1))))
+# Add pattern rule(s) for creating compiled object code from C++ source.
+$(foreach TGT,${ALL_TGTS},\
+  $(foreach EXT,${CXX_SRC_EXTS},\
+    $(eval $(call ADD_OBJECT_RULE,${BUILD_DIR}/$(call CANONICAL_PATH,${TGT}),\
+             ${EXT},$${COMPILE_CXX_CMDS}))))
 
-#---------------------------------------------#
-# Get the suffix name from a file name.       #
-#  $1 -- The file name                        #
-#  $2 -- The favorite suffixes                #
-#---------------------------------------------#
-get_suffix_names = $(strip $(foreach i,$2,$(if $(filter %.$i,$1),$i)))
+# Add "clean" rules to remove all build-generated files.
+.PHONY: clean
+$(foreach TGT,${ALL_TGTS},\
+  $(eval $(call ADD_CLEAN_RULE,${TGT})))
 
-#-------------------------------------------------------------------#
-# Replace the pattern .. with !! in the path names in order that    #
-# no directories are out of the object directory                    #
-#  $1 -- The path names                                             #
-#-------------------------------------------------------------------#
-objdir_transform = $(if $(have_objdir),$(subst ..,!!,$1),$1)
-
-
-#------------------------------------------------------------------#
-# Set up static pattern rules for sources with specified suffixes  #
-# in specified directories.                                        #
-#  $1 -- Source directories                                        #
-#  $2 -- Source suffixes                                           #
-#  $3 -- Equal to $(call ls $1,$2)                                 #
-#------------------------------------------------------------------#
-static_pattern_rules = $(if $3,$(call __static_pattern_rule,$(patsubst %.$2,$(objdir)%.$O,$3),$1,$2))
-
-
-#------------------------------------#
-# Command to make directory          #
-#  $1 -- The directory to be made    #
-#------------------------------------#
-define cmd_make_directory
-$(Q)if test ! -d "$1"; then $(Q_mkdir)mkdir -p "$1"; fi
-
-endef
-
-cmd_compile = $(Q_compile)$(if $(ucmd_$1),$(ucmd_$1),$(GCC) -I$$(dir $$<) $(CFLAGS) -c -o $$@ $$<)
-
-#------------------------------------------------------------------#
-#  Static pattern rule                                             #
-#  $1 -- Targets                                                   #
-#  $1 -- Source directories                                        #
-#  $3 -- The source suffix                                         #
-#------------------------------------------------------------------#
-define __static_pattern_rule
-$(call objdir_transform,$1): $(call objdir_transform,$(objdir)$2%.$(O)): $2%.$3 $(g_makefile_list)
-	$(call cmd_compile,$3)
-
-endef
-
-
-#--------------------------------------------------------------#
-#  Ordinary rule                                               #
-#  $1 -- The prerequisite                                      #
-#  $2 -- The Target                                            #
-#--------------------------------------------------------------#
-define ordinary_rule
-$(call objdir_transform,$2): $1 $(g_makefile_list)
-	$(call cmd_compile,$(call get_suffix_names,$1,$(SOURCE_SUFFIXES)))
-
-endef
-
-#--------------------------------------------------------#
-# Make sure the default target "all" is the first target
-#--------------------------------------------------------#
-PHONY = all clean distclean make_sub_dirs
-all: make_sub_dirs $(TARGET)
-
-#----------------------------------------------------#
-# Dynamic Targets
-#----------------------------------------------------#
-$(eval $(foreach i,\
-    $(sort $(src-d)),\
-    $(foreach j,$(SOURCE_SUFFIXES),$(call static_pattern_rules,$i,$j,$(call exclude,$(call ls,$i,$j)))))\
-    $(foreach i,$(call exclude,$(sort $(src-f))),$(call ordinary_rule,$i,$(objdir)$(call get_object_names,$i,$(SOURCE_SUFFIXES)))))
-
-
-#-------------------------------------#
-# Get the list of all source files    #
-#-------------------------------------#
-srcs = $(call exclude,\
-	$(foreach i,$(SOURCE_SUFFIXES),\
-	$(foreach j,$(src-d),\
-	$(wildcard $j*.$i)) $(filter %.$i,$(src-f))))
-
-ifeq ($(strip $(srcs)),)
-$(error Empty source list! Please check both src-y and SOURCE_SUFFIXES are correctly set.)
-endif
-
-#-------------------------------------#
-# Get the list of all object files    #
-#-------------------------------------#
-objs = $(call objdir_transform,$(addprefix $(objdir),$(call get_object_names,$(srcs),$(SOURCE_SUFFIXES))))
-objs += $(obj-y)
-
-#----------------------------------------------------#
-# Static Targets
-#----------------------------------------------------#
-make_sub_dirs:
-	$(call cmd_make_directory,$(dir $(TARGET)))
-	$(foreach i,$(call objdir_transform,$(sort $(src-d) $(dir $(src-f)))),$(call cmd_make_directory,$(objdir)$i))
-
-ifneq ($(single_depend_file),)
-$(single_depend_file): $(srcs) $(filter-out $@,$(g_makefile_list)) $(objdir)
-	$(GCC) $(CFLAGS) -MM -MG $(srcs) | \
-sed 's#\([^[:space:]]\+\)\.$O:\s\([^[:space:]]\+\)\.\([^[:space:].]\+\s\?\)#$(objdir)\2.$O: \2.\3#g' > $@
-$(objdir): ; $(call cmd_make_directory,$(objdir))
-endif
-
-ifeq ($(TARGET_TYPE),AR)
-$(TARGET): AR := $(GNU_TOOLCHAIN_PREFIX)ar
-$(TARGET): $(TARGET_DEPENDS) $(objs)
-	$(Q_ar)rm -f $@ && $(AR) rcvs $@ $(objs)
-else
-
-ifeq ($(TARGET_TYPE),BIN)
-tmp_target   = $(basename $(TARGET)).elf
-LDFLAGS     += -nodefaultlibs -nostdlibs -nostartupfiles
-$(TARGET): $(tmp_target)
-	$(GNU_TOOLCHAIN_PREFIX)objcopy -O binary $(tmp_target) $@
-	$(GNU_TOOLCHAIN_PREFIX)objdump -d $(tmp_target) > $(basename $(@F)).lst
-	$(GNU_TOOLCHAIN_PREFIX)nm $(tmp_target) | sort -k1 > $(basename $(@F)).map
-else
-tmp_target   = $(TARGET)
-endif
-
-$(tmp_target): LD = $(if $(foreach i,cpp cc cxx,$(filter %.$i,$(srcs))),$(GNU_TOOLCHAIN_PREFIX)g++,$(GCC))
-$(tmp_target): $(TARGET_DEPENDS) $(objs) $(LD_SCRIPT)
-	$(Q_link)$(LD) $(LDFLAGS) $(if $(LD_SCRIPT),-T $(LD_SCRIPT)) $(objs) $(LIBS) -o $(tmp_target)
-
-endif
-
-clean:
-	$(Q_clean)rm -rf $(filter-out ./,$(objdir)) $(TARGET) $(filter-out $(obj-y),$(objs))
-distclean: clean
-	$(Q_distclean)find -name '*.$O' -o -name '*.$D' | xargs rm -f; $(if $(single_depend_file),rm -f $(single_depend_file))
-print-%:
-	@echo $* = $($*)
-
-.DEFAULT_GOAL = all
-
-sinclude $(if $(filter all,$(if $(MAKECMDGOALS),$(MAKECMDGOALS),$(.DEFAULT_GOAL))), \
-$(if $(single_depend_file),$(single_depend_file),$(foreach i,$(objs),$i.$(D))))
-
-
+# Include generated rules that define additional (header) dependencies.
+$(foreach TGT,${ALL_TGTS},\
+  $(eval -include ${${TGT}_DEPS}))
