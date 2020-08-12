@@ -181,7 +181,7 @@ add_one_hsp_result_set(HbnHSPResults* results, FILE* out, pthread_mutex_t* out_l
     ks_clear(*os);
 }
 
-static void
+void
 dump_m4_hits(const text_t* query_vol,
     const text_t* subject_vol,
     HbnHSPResults* results,
@@ -195,6 +195,7 @@ dump_m4_hits(const text_t* query_vol,
         for (int j = 0; j < hit_list->hsplist_count; ++j) {
             BlastHSPList* hsp_list = hit_list->hsplist_array[j];
             for (int k = 0; k < hsp_list->hspcnt; ++k) {
+                //HBN_LOG("*** hspcnt = %d", hsp_list->hspcnt);
                 BlastHSP* hsp = hsp_list->hsp_array[k];
                 hbn_assert(hsp->hbn_subject.strand == FWD);
                 if (hsp->hbn_query.strand == REV) {
@@ -264,6 +265,7 @@ purge_null_hsplist(HbnHSPResults* results)
     for (int i = 0; i < results->num_queries; ++i) {
         BlastHitList* hit_list = results->hitlist_array + i;
         int n = 0;
+        //HBN_LOG("hsplist: %d", hit_list->hsplist_count);
         for (int j = 0; j < hit_list->hsplist_count; ++j) {
             BlastHSPList* hsp_list = hit_list->hsplist_array[j];
             if (hsp_list) {
@@ -275,6 +277,7 @@ purge_null_hsplist(HbnHSPResults* results)
             }
             if (hsp_list) hit_list->hsplist_array[n++] = hsp_list;
         }
+        //HBN_LOG("n = %d", n);
         hit_list->hsplist_count = n;
     }
 }

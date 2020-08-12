@@ -4,7 +4,8 @@
 #include "hbn_options.h"
 #include "subseq_hit.h"
 #include "../../algo/hbn_traceback.h"
-#include "../../algo/mem_finder.h"
+#include "../../algo/init_hit_finder.h"
+#include "../../corelib/seqdb.h"
 #include "../../ncbi_blast/setup/blast_hits.h"
 
 #ifdef __cplusplus
@@ -15,7 +16,7 @@ typedef struct {
     vec_subseq_hit fwd_sbjct_subseq_list;
     vec_subseq_hit rev_sbjct_subseq_list;
     vec_subseq_hit sbjct_subseq_list;
-    MaximalExactMatchWorkData* mem_data;
+    InitHitFindData* hit_finder;
     HbnTracebackData* traceback_data;
     vec_chain_seed chain_seed_list;
 } HbnSubseqHitExtnData;

@@ -2815,6 +2815,7 @@ Blast_ScoreBlkKbpUngappedCalc(EBlastProgramType program,
 
       query_length = contexts[context].query_length;
       context_offset = contexts[context].query_offset;
+      //HBN_LOG("context = %d, offset = %d, length = %d", context, context_offset, query_length);
       buffer = &query[context_offset];
 
       Blast_ResFreqString(sbp, rfp, (char*)buffer, query_length);

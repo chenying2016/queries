@@ -275,7 +275,7 @@ print_one_sam_result(const BlastHSP* hsp,
     ksprintf(out, "qe:i:%d", hsp->query.end);
     // ql
     kputc(tab, out);
-    ksprintf(out, "ql:i:%d", hsp->hbn_query.seq_size);
+    ksprintf(out, "ql:i:%zu", hsp->hbn_query.seq_size);
     /// identity
     kputc(tab, out);
     ksprintf(out, "mc:f:%g", hsp->hsp_info.perc_identity);

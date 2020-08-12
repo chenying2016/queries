@@ -65,16 +65,14 @@ const string kArgDDFScore("ddf_score");
 const int kDfltDDFScore = 2;
 
 /// mem scoring options
-const string kArgMemScKmerSize("memsc_kmer_size");
-const int kDfltMemScKmerSize = 10;
+const string kArgMemScKmerSize("chain_kmer_size");
+const int kDfltMemScKmerSize = 13;
 const int kMemScKmerSizeMin = 8;
-const int kMemScKmerSizeMax = 10;
-const string kArgMemScKmerWindow("memsc_kmer_window");
-const int kDfltMemScKmerWindow = 6;
-const string kArgMemScMemSize("memsc_mem_size");
-const int kDfltMemScMemSize = 15;
-const string kArgMemScMemScore("memsc_mem_score");
-const int kDfltMemScMemScore = 30;
+const int kMemScKmerSizeMax = 13;
+const string kArgMemScKmerWindow("chain_kmer_window");
+const int kDfltMemScKmerWindow = 5;
+const string kArgMemScMemScore("chain_score");
+const int kDfltMemScMemScore = 13;
 
 /// formatting options
 extern const string align_format::kArgOutputFormat;
@@ -122,7 +120,7 @@ static const char* kGroupGeneralSearchOptions = "General search options";
 static const char* kGroupInputQuery = "Input query options";
 static const char* kGroupDbOptions = "Database options";
 static const char* kGroupDDFSc = "DDF scoring options";
-static const char* kGroupMemSc = "MEM chaining scoring options";
+static const char* kGroupMemSc = "Chaining scoring options";
 static const char* kGroupFormat = "Formatting options";
 static const char* kGroupQueryFiltering = "Query Filtering Options";
 static const char* kGroupRestrictSearch = "Restrict search or results";
@@ -295,12 +293,6 @@ void CommandLineArguments::SetArgumentDescriptions(CArgDescriptions& arg_desc)
                 CArgDescriptions::eInteger,
                 NStr::IntToString(kDfltMemScKmerWindow));
     arg_desc.SetConstraint(kArgMemScKmerWindow, CArgAllowValuesGreaterThanOrEqual(1));
-
-    arg_desc.AddDefaultKey(kArgMemScMemSize, "int_value",
-                "Length of maximal exact match",
-                CArgDescriptions::eInteger,
-                NStr::IntToString(kDfltMemScMemSize));
-    arg_desc.SetConstraint(kArgMemScMemSize, CArgAllowValuesGreaterThanOrEqual(1));
 
     arg_desc.AddDefaultKey(kArgMemScMemScore, "int_value",
                 "Minimum chaining score of a candidate",
@@ -526,10 +518,6 @@ void CommandLineArguments::ExtractAlgorithmOptions(const CArgs& args, CBlastOpti
         m_Options->memsc_kmer_window = args[kArgMemScKmerWindow].AsInteger();
     }
 
-    if (args.Exist(kArgMemScMemSize) && args[kArgMemScMemSize].HasValue()) {
-        m_Options->memsc_mem_size = args[kArgMemScMemSize].AsInteger();
-    }
-
     if (args.Exist(kArgMemScMemScore) && args[kArgMemScMemScore].HasValue()) {
         m_Options->memsc_score = args[kArgMemScMemScore].AsInteger();
     }
@@ -708,7 +696,6 @@ void Init_HbnProgramOptions(HbnProgramOptions* opts)
     /// mem chaining scoring options
     opts->memsc_kmer_size = kDfltMemScKmerSize;
     opts->memsc_kmer_window = kDfltMemScKmerWindow;
-    opts->memsc_mem_size = kDfltMemScMemSize;
     opts->memsc_score = kDfltMemScMemScore;
 
     /// formatting options
@@ -891,7 +878,6 @@ char* HbnProgramOptions2String(const HbnProgramOptions* opts)
     /// mem chaining scoring options
     os_one_option_value(kArgMemScKmerSize, opts->memsc_kmer_size);
     os_one_option_value(kArgMemScKmerWindow, opts->memsc_kmer_window);
-    os_one_option_value(kArgMemScMemSize, opts->memsc_mem_size);
     os_one_option_value(kArgMemScMemScore, opts->memsc_score);
 
     /// output format

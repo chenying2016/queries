@@ -518,3 +518,226 @@ CSeqDBNew()
     CSeqDB* db = (CSeqDB*)calloc(1, sizeof(CSeqDB));
     return db;
 }
+
+int
+extract_sequence_block_from_packed_seqdb(const CSeqDB* pdb,
+    int* next_seq_id,
+    pthread_mutex_t* seq_id_lock,
+    const int seq_batch_size,
+    const BOOL extract_fwd_sequence,
+    const BOOL extract_rev_sequence,
+    const BOOL extract_ambig_sequence,
+    BLAST_SequenceBlk* seq_blk,
+    BlastQueryInfo* seq_info)
+{
+    hbn_assert(pdb->packed_seq);
+    int from = 0, to = 0;
+    if (seq_id_lock) pthread_mutex_lock(seq_id_lock);
+    from = *next_seq_id;
+    *next_seq_id += seq_batch_size;
+    if (seq_id_lock) pthread_mutex_unlock(seq_id_lock);
+    if (from >= pdb->dbinfo.num_seqs) return 0;
+    to = hbn_min(from + seq_batch_size, pdb->dbinfo.num_seqs);
+    int num_seq = to - from;
+
+    int length = 0;
+    for (int i = from; i < to; ++i) {
+        int size = seqdb_seq_size(pdb, i);
+        if (extract_fwd_sequence) length += size;
+        if (extract_rev_sequence) length += size;
+    }
+
+    BlastContextInfo ctx_info;
+    int ctx_idx = 0;
+    int seq_idx = 0;
+    int max_length = 0;
+    int min_length = I32_MAX;
+    seq_blk->sequence = (Uint1*)realloc(seq_blk->sequence, length);
+    if (extract_ambig_sequence) {
+        seq_blk->sequence_nomask = (Uint1*)realloc(seq_blk->sequence_nomask, length);
+    }
+    seq_blk->length = length;
+    kv_dinit(vec_u8, seq);
+
+    for (int i = from; i < to; ++i) {
+        ctx_info.query_length = seqdb_seq_size(pdb, i);
+        ctx_info.eff_searchsp = 0;
+        ctx_info.length_adjustment = 0;
+        ctx_info.query_index = i;
+        ctx_info.frame = 0;
+        ctx_info.is_valid = TRUE;
+        ctx_info.segment_flags = 0;
+
+        max_length = hbn_max(max_length, ctx_info.query_length);
+        min_length = hbn_min(min_length, ctx_info.query_length);
+
+        if (extract_fwd_sequence) {
+            ctx_info.query_offset = seq_idx;
+            ctx_info.frame = FWD;
+            seq_info->contexts[ctx_idx++] = ctx_info;
+            seqdb_extract_sequence(pdb, i, FWD, &seq);
+            hbn_assert(ctx_info.query_length == kv_size(seq));
+            memcpy(seq_blk->sequence + seq_idx, kv_data(seq), kv_size(seq));
+            if (extract_ambig_sequence) {
+                seqdb_recover_sequence_ambig_res(pdb, i, FWD, kv_data(seq));
+                hbn_assert(ctx_info.query_length == kv_size(seq));
+                memcpy(seq_blk->sequence_nomask + seq_idx, kv_data(seq), kv_size(seq));
+            }
+            seq_idx += ctx_info.query_length;
+        }
+
+        if (extract_rev_sequence) {
+            ctx_info.query_offset = seq_idx;
+            ctx_info.frame = REV;
+            seq_info->contexts[ctx_idx++] = ctx_info;
+            seqdb_extract_sequence(pdb, i, REV, &seq);
+            hbn_assert(ctx_info.query_length == kv_size(seq));
+            memcpy(seq_blk->sequence + seq_idx, kv_data(seq), kv_size(seq));
+            if (extract_ambig_sequence) {
+                seqdb_recover_sequence_ambig_res(pdb, i, REV, kv_data(seq));
+                hbn_assert(ctx_info.query_length == kv_size(seq));
+                memcpy(seq_blk->sequence_nomask + seq_idx, kv_data(seq), kv_size(seq));
+            }
+            seq_idx += ctx_info.query_length;
+        }
+    }
+    hbn_assert(seq_idx == length);
+    kv_destroy(seq);
+
+    seq_info->first_context = 0;
+    seq_info->last_context = ctx_idx - 1;
+    seq_info->num_queries = num_seq;
+    seq_info->max_length = max_length;
+    seq_info->min_length = min_length;  
+
+    return num_seq;
+}
+
+static void
+s_extract_subsequence_without_ambig_res_from_unpacked_seqdb(
+    const text_t* pdb, const int pid, 
+    const size_t from, const size_t to, vec_u8* primer)
+{
+    hbn_assert(pdb != NULL);
+    kv_clear(*primer);
+    const u8* s = pdb->unpacked_seq + seqdb_seq_offset(pdb, pid);
+    const u8 code_table[16] = {0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0xf};
+    for (size_t i = from; i < to; ++i) {
+        u8 c = s[i];
+        c = code_table[c];
+        kv_push(u8, *primer, c);
+    }
+}
+
+int
+extract_sequence_block_from_unpacked_seqdb(const CSeqDB* updb,
+    int* next_seq_id,
+    pthread_mutex_t* seq_id_lock,
+    const int seq_batch_size,
+    const BOOL extract_fwd_sequence,
+    const BOOL extract_rev_sequence,
+    const BOOL extract_ambig_sequence,
+    BLAST_SequenceBlk* seq_blk,
+    BlastQueryInfo* seq_info)
+{
+    hbn_assert(updb->unpacked_seq);
+    int from = 0, to = 0;
+    if (seq_id_lock) pthread_mutex_lock(seq_id_lock);
+    from = *next_seq_id;
+    *next_seq_id += seq_batch_size;
+    if (seq_id_lock) pthread_mutex_unlock(seq_id_lock);
+    if (from >= updb->dbinfo.num_seqs) return 0;
+    to = hbn_min(from + seq_batch_size, updb->dbinfo.num_seqs);
+    int num_seq = to - from;
+
+    int length = 0;
+    for (int i = from; i < to; ++i) {
+        int size = seqdb_seq_size(updb, i);
+        if (extract_fwd_sequence) length += size;
+        if (extract_rev_sequence) length += size;
+    }
+
+    BlastContextInfo ctx_info;
+    int ctx_idx = 0;
+    int seq_idx = 0;
+    int max_length = 0;
+    int min_length = I32_MAX;
+    seq_blk->sequence = (Uint1*)realloc(seq_blk->sequence, length);
+    if (extract_ambig_sequence) {
+        seq_blk->sequence_nomask = (Uint1*)realloc(seq_blk->sequence_nomask, length);
+    }
+    seq_blk->length = length;
+    kv_dinit(vec_u8, seq);
+
+    for (int i = from; i < to; ++i) {
+        ctx_info.query_length = seqdb_seq_size(updb, i);
+        ctx_info.eff_searchsp = 0;
+        ctx_info.length_adjustment = 0;
+        ctx_info.query_index = i;
+        ctx_info.frame = 0;
+        ctx_info.is_valid = TRUE;
+        ctx_info.segment_flags = 0;
+
+        max_length = hbn_max(max_length, ctx_info.query_length);
+        min_length = hbn_min(min_length, ctx_info.query_length);
+
+        if (extract_fwd_sequence) {
+            ctx_info.query_offset = seq_idx;
+            ctx_info.frame = FWD;
+            seq_info->contexts[ctx_idx++] = ctx_info;
+            s_extract_subsequence_without_ambig_res_from_unpacked_seqdb(
+                updb, i, 0, ctx_info.query_length, &seq);
+            hbn_assert(ctx_info.query_length == kv_size(seq));
+            memcpy(seq_blk->sequence + seq_idx, kv_data(seq), kv_size(seq));
+            if (extract_ambig_sequence) {
+                const u8* ambig_seq = updb->unpacked_seq + seqdb_seq_offset(updb, i);
+                memcpy(seq_blk->sequence_nomask + seq_idx, ambig_seq, ctx_info.query_length);
+            }
+            seq_idx += ctx_info.query_length;
+        }
+
+        if (extract_rev_sequence) {
+            ctx_info.query_offset = seq_idx;
+            ctx_info.frame = REV;
+            seq_info->contexts[ctx_idx++] = ctx_info;
+            if (!extract_fwd_sequence) {
+                s_extract_subsequence_without_ambig_res_from_unpacked_seqdb(
+                    updb, i, 0, ctx_info.query_length, &seq);                
+            }
+            size_t p = 0, q = kv_size(seq);
+            while (q) {
+                --q;
+                u8 c = 3 - kv_A(seq, q);
+                seq_blk->sequence[seq_idx + p] = c;
+                ++p;
+            }
+            hbn_assert(p == ctx_info.query_length);
+            if (extract_ambig_sequence) {
+                const u8* fwd_ambig_from = updb->unpacked_seq + seqdb_seq_offset(updb, i);
+                const u8* fwd_ambig_to = fwd_ambig_from + ctx_info.query_length;
+                const u8* as = fwd_ambig_to;
+                p = 0;
+                while (as > fwd_ambig_from) {
+                    --as;
+                    u8 c = *as;
+                    hbn_assert(c < BLASTNA_SIZE);
+                    c = BLASTNA_REVERSE_COMPLEMENT_TABLE[c];
+                    seq_blk->sequence_nomask[seq_idx + p] = c;
+                    ++p;
+                }
+                hbn_assert(p == ctx_info.query_length);
+            }
+            seq_idx += ctx_info.query_length;
+        }
+    }
+    kv_destroy(seq);
+    hbn_assert(seq_idx == length);
+
+    seq_info->first_context = 0;
+    seq_info->last_context = ctx_idx - 1;
+    seq_info->num_queries = num_seq;
+    seq_info->max_length = max_length;
+    seq_info->min_length = min_length;  
+
+    return num_seq;
+}

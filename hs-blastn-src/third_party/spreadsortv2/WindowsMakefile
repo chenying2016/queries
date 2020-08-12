@@ -1,0 +1,58 @@
+spreadsort: example/sample.cpp 
+		g++ -Wno-deprecated -O3 example/sample.cpp -o spreadsort -Wall -I .
+
+alreadysorted: example/alreadysorted.cpp 
+		g++ -Wno-deprecated -O3 example/alreadysorted.cpp -o alreadysorted -Wall -I .
+
+mostlysorted: example/mostlysorted.cpp 
+		g++ -Wno-deprecated -O3 example/mostlysorted.cpp -o mostlysorted -Wall -I .
+
+rightshift: example/rightshiftsample.cpp 
+		g++ -Wno-deprecated -O3 example/rightshiftsample.cpp -o rightshift -Wall -I .
+
+reverseintsort: example/reverseintsample.cpp 
+		g++ -Wno-deprecated -O3 example/reverseintsample.cpp -o reverseintsort -Wall -I .
+
+int64: example/int64.cpp 
+		g++ -Wno-deprecated -O3 example/int64.cpp -o int64 -Wall -I .
+
+floatsort: example/floatsample.cpp 
+		g++ -Wno-deprecated -O3 example/floatsample.cpp -o floatsort -Wall -I .
+
+shiftfloatsort: example/shiftfloatsample.cpp 
+		g++ -Wno-deprecated -O3 example/shiftfloatsample.cpp -o shiftfloatsort -Wall -I .
+
+floatfunctorsort: example/floatfunctorsample.cpp 
+		g++ -Wno-deprecated -O3 example/floatfunctorsample.cpp -o floatfunctorsort -Wall -I .
+
+double: example/double.cpp 
+		g++ -Wno-deprecated -O3 example/double.cpp -o double -Wall -I .
+
+stringsort: example/stringsample.cpp 
+	g++ -Wno-deprecated -O3 example/stringsample.cpp -o stringsort -Wall -I .
+
+wstringsort: example/wstringsort.cpp 
+		g++ -Wno-deprecated -O3 example/wstringsortsample.cpp -o wstringsort -Wall -I .
+
+reversestringsort: example/reversestringsample.cpp  
+	g++ -Wno-deprecated -O3 example/reversestringsample.cpp -o reversestringsort -Wall -I .
+
+charstringsort: example/charstringsample.cpp  
+	g++ -Wno-deprecated -O3 example/charstringsample.cpp -o charstringsort -Wall -I .
+
+stringfunctorsort: example/stringfunctorsample.cpp  
+	g++ -Wno-deprecated -O3 example/stringfunctorsample.cpp -o stringfunctorsort -Wall -I .
+
+reversestringfunctorsort: example/reversestringfunctorsample.cpp  
+	g++ -Wno-deprecated -O3 example/reversestringfunctorsample.cpp -o reversestringfunctorsort -Wall -I .
+
+keyplusdata: example/keyplusdatasample.cpp 
+	g++ -Wno-deprecated -O3 example/keyplusdatasample.cpp -o keyplusdata -Wall -I .
+	
+randomgen: example/randomGen.cpp
+	g++ -Wno-deprecated -O3 example/randomGen.cpp -o randomgen
+
+all: randomgen spreadsort rightshift floatsort stringsort stringfunctorsort keyplusdata floatfunctorsort charstringsort reversestringsort reversestringfunctorsort shiftfloatsort reverseintsort alreadysorted mostlysorted int64 double
+
+clean:
+		del spreadsort spreadsort.exe firstdim firstdim.exe randomgen randomgen.exe keyplusdata keyplusdata.exe floatsort floatsort.exe stringfunctorsort stringfunctorsort.exe rightshift rightshift.exe charstringsort charstringsort.exe stringsort stringsort.exe floatfunctorsort floatfunctorsort.exe reversestringsort reversestringsort.exe reversestringfunctorsort reversestringfunctorsort.exe shiftfloatsort shiftfloatsort.exe reverseintsort reverseintsort.exe alreadysorted alreadysorted.exe mostlysorted mostlysorted.exe int64 int64.exe double double.exe

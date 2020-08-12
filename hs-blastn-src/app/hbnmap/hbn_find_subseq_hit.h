@@ -3,7 +3,6 @@
 
 #include "hbn_options.h"
 #include "subseq_hit.h"
-#include "../../algo/mem_finder.h"
 #include "../../algo/word_finder.h"
 
 #ifdef __cplusplus

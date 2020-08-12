@@ -32,8 +32,9 @@ SOURCES      := \
 	./algo/hash_list_bucket_sort.c \
 	./algo/hbn_traceback.c \
 	./algo/hbn_traceback_aux.c \
+	./algo/init_hit_finder.c \
 	./algo/hbn_lookup_table.c \
-	./algo/mem_finder.c \
+	./algo/sort_sr_hit_seeds.cpp \
 	./algo/word_finder.c \
 	./ncbi_blast/c_ncbi_blast_aux.c \
 	./ncbi_blast/ncbi_blast_aux.cpp \
@@ -63,6 +64,6 @@ SOURCES      := \
 	./ncbi_blast/setup/blast_sequence_blk.c \
 	./ncbi_blast/setup/gapinfo.c
 
-SRC_INCDIRS  :=
+SRC_INCDIRS  := ./third_party/spreadsortv2
 
-SUBMAKEFILES := ./app/hbnmap/main.mk ./app/test/main.mk
+SUBMAKEFILES := ./app/primer_map/main.mk ./app/hbnmap/main.mk

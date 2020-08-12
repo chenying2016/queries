@@ -18,7 +18,12 @@ typedef struct {
 
 typedef kvec_t(ChainSeed) vec_chain_seed;
 
-void ks_introsort_chain_seed_soff_lt(size_t n, ChainSeed* a);
+void
+validate_mem(HBN_LOG_PARAMS_GENERIC,
+    const u8* read, 
+    const u8* subject,
+    const ChainSeed* cdpsa,
+    const int cdpsc);
 
 typedef struct {
     int max_dist_ref;
@@ -57,6 +62,7 @@ find_best_kmer_match(ChainWorkData* data,
 int chaining_find_candidates(ChainWorkData* data,
         ChainSeed* chain_seed_array,
         int chain_seed_count,
+        const int is_maximal_exact_match,
         const int subject_strand,
         vec_init_hit* init_hit_list,
         vec_chain_seed* chain_seed_list);

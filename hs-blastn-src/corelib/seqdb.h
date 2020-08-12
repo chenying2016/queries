@@ -2,6 +2,10 @@
 #define __SEQDB_H
 
 #include "hbn_aux.h"
+#include "../ncbi_blast/setup/blast_sequence_blk.h"
+#include "../ncbi_blast/setup/blast_query_info.h"
+
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -199,6 +203,28 @@ seqdb_recover_subsequence_ambig_res(const CSeqDB* seqdb,
     const size_t to,
     const int strand,
     u8* seq);
+
+int
+extract_sequence_block_from_unpacked_seqdb(const CSeqDB* updb,
+    int* next_seq_id,
+    pthread_mutex_t* seq_id_lock,
+    const int seq_batch_size,
+    const BOOL extract_fwd_sequence,
+    const BOOL extract_rev_sequence,
+    const BOOL extract_ambig_sequence,
+    BLAST_SequenceBlk* seq_blk,
+    BlastQueryInfo* seq_info);
+
+int
+extract_sequence_block_from_packed_seqdb(const CSeqDB* pdb,
+    int* next_seq_id,
+    pthread_mutex_t* seq_id_lock,
+    const int seq_batch_size,
+    const BOOL extract_fwd_sequence,
+    const BOOL extract_rev_sequence,
+    const BOOL extract_ambig_sequence,
+    BLAST_SequenceBlk* seq_blk,
+    BlastQueryInfo* seq_info);
 
 #ifdef __cplusplus
 }

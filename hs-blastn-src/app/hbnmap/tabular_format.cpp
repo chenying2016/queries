@@ -327,6 +327,7 @@ print_tabular_report_for_one_hitlist(const char* query_name,
         const int subject_id = hsp_list->hsp_array[0]->hbn_subject.oid;
         const char* subject_name = seqdb_seq_name(db, subject_id);
         for (int j = 0; j < hsp_list->hspcnt; ++j) {
+            //HBN_LOG("*** oid = %d, hspcnt = %d", hsp_list->oid, hsp_list->hspcnt);
             BlastHSP* hsp = hsp_list->hsp_array[j];
             print_tabular_report_for_one_hsp(hsp, query_name, subject_name, out);
         }
@@ -337,6 +338,7 @@ static const char*
 extract_query_name(BlastHitList* hit_list, const CSeqDB* queries)
 {
     const char* query_name = NULL;
+    //HBN_LOG("hsplist: %d", hit_list->hsplist_count);
     for (int i = 0; i < hit_list->hsplist_count; ++i) {
         BlastHSPList* hsp_list = hit_list->hsplist_array[i];
         if (!hsp_list) continue;
@@ -363,10 +365,14 @@ print_tabular_reports(HbnHSPResults* results, const char* db_name, const CSeqDB*
     vector<ETabularField> default_fields;
     x_AddDefaultFieldsToShow(field_map, default_fields);
     ostringstream out;
+    //HBN_LOG("number of queries: %d", results->num_queries);
     for (int i = 0; i < results->num_queries; ++i) {
         BlastHitList* hit_list = results->hitlist_array + i;
         const char* query_name = extract_query_name(hit_list, queries);
-        if (!query_name) continue;
+        if (!query_name) {
+            //HBN_LOG("%d fail to find query name", query_name);
+            continue;
+        }
         print_tabular_report_for_one_hitlist(query_name, db_name, db, hit_list, outfmt, field_map, default_fields, out);
     }
     kstring_t* out_buf = &results->output_buf;

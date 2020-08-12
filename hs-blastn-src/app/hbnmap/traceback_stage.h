@@ -11,6 +11,9 @@ extern "C" {
 void
 add_align_string(BlastHSP* hsp, const u8* query, const u8* subject, kstring_t* aligned_string);
 
+void
+purge_contained_hsps(BlastHSPList* hsp_list, const int min_diag_seperation);
+
 int
 compute_traceback_from_hsplist(EBlastProgramType program_number,
     BlastHSPList* hsp_list,

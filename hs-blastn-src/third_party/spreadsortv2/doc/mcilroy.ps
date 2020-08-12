@@ -1,0 +1,2859 @@
+%!PS
+%%Version: 3.3.1
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+%
+% Version 3.3.1 prologue for troff files.
+%
+
+/#copies 1 store
+/aspectratio 1 def
+/formsperpage 1 def
+/landscape false def
+/linewidth .3 def
+/magnification 1 def
+/margin 0 def
+/orientation 0 def
+/resolution 720 def
+/rotation 1 def
+/xoffset 0 def
+/yoffset 0 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/R  /Times-Roman def
+/I  /Times-Italic def
+/B  /Times-Bold def
+/BI /Times-BoldItalic def
+/H  /Helvetica def
+/HI /Helvetica-Oblique def
+/HB /Helvetica-Bold def
+/HX /Helvetica-BoldOblique def
+/CW /Courier def
+/CO /Courier def
+/CI /Courier-Oblique def
+/CB /Courier-Bold def
+/CX /Courier-BoldOblique def
+/PA /Palatino-Roman def
+/PI /Palatino-Italic def
+/PB /Palatino-Bold def
+/PX /Palatino-BoldItalic def
+/Hr /Helvetica-Narrow def
+/Hi /Helvetica-Narrow-Oblique def
+/Hb /Helvetica-Narrow-Bold def
+/Hx /Helvetica-Narrow-BoldOblique def
+/KR /Bookman-Light def
+/KI /Bookman-LightItalic def
+/KB /Bookman-Demi def
+/KX /Bookman-DemiItalic def
+/AR /AvantGarde-Book def
+/AI /AvantGarde-BookOblique def
+/AB /AvantGarde-Demi def
+/AX /AvantGarde-DemiOblique def
+/NR /NewCenturySchlbk-Roman def
+/NI /NewCenturySchlbk-Italic def
+/NB /NewCenturySchlbk-Bold def
+/NX /NewCenturySchlbk-BoldItalic def
+/ZD /ZapfDingbats def
+/ZI /ZapfChancery-MediumItalic def
+/S  /S def
+/S1 /S1 def
+/GR /Symbol def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	/scaling 72 resolution div def
+	linewidth setlinewidth
+	1 setlinecap
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	scaling scaling scale
+
+	addmetrics
+	0 0 moveto
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/addmetrics {
+	/Symbol /S null Sdefs cf
+	/Times-Roman /S1 StandardEncoding dup length array copy S1defs cf
+} def
+
+/pagesetup {
+	/page exch def
+	currentdict /pagedict known currentdict page known and {
+		page load pagedict exch get cvx exec
+	} if
+} def
+
+/decodingdefs [
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg /y exch def counttomark 2 idiv {y moveto show} repeat}
+	{neg moveto {2 index stringwidth pop sub exch div 0 32 4 -1 roll widthshow} repeat}
+	{neg moveto {spacewidth sub 0.0 32 4 -1 roll widthshow} repeat}
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg setfunnytext}
+] def
+
+/setdecoding {/t decodingdefs 3 -1 roll get bind def} bind def
+
+/w {neg moveto show} bind def
+/m {neg dup /y exch def moveto} bind def
+/done {/lastpage where {pop lastpage} if} def
+
+/f {
+	dup /font exch def findfont exch
+	dup /ptsize exch def scaling div dup /size exch def scalefont setfont
+	linewidth ptsize mul scaling 10 mul div setlinewidth
+	/spacewidth ( ) stringwidth pop def
+} bind def
+
+/changefont {
+	/fontheight exch def
+	/fontslant exch def
+	currentfont [
+		1 0
+		fontheight ptsize div fontslant sin mul fontslant cos div
+		fontheight ptsize div
+		0 0
+	] makefont setfont
+} bind def
+
+/sf {f} bind def
+
+/cf {
+	dup length 2 idiv
+	/entries exch def
+	/chtab exch def
+	/newencoding exch def
+	/newfont exch def
+
+	findfont dup length 1 add dict
+	/newdict exch def
+	{1 index /FID ne {newdict 3 1 roll put}{pop pop} ifelse} forall
+
+	newencoding type /arraytype eq {newdict /Encoding newencoding put} if
+
+	newdict /Metrics entries dict put
+	newdict /Metrics get
+	begin
+		chtab aload pop
+		1 1 entries {pop def} for
+		newfont newdict definefont pop
+	end
+} bind def
+
+%
+% A few arrays used to adjust reference points and character widths in some
+% of the printer resident fonts. If square roots are too high try changing
+% the lines describing /radical and /radicalex to,
+%
+%	/radical	[0 -75 550 0]
+%	/radicalex	[-50 -75 500 0]
+%
+% Move braceleftbt a bit - default PostScript character is off a bit.
+%
+
+/Sdefs [
+	/bracketlefttp		[201 500]
+	/bracketleftbt		[201 500]
+	/bracketrighttp		[-81 380]
+	/bracketrightbt		[-83 380]
+	/braceleftbt		[203 490]
+	/bracketrightex		[220 -125 500 0]
+	/radical		[0 0 550 0]
+	/radicalex		[-50 0 500 0]
+	/parenleftex		[-20 -170 0 0]
+	/integral		[100 -50 500 0]
+	/infinity		[10 -75 730 0]
+] def
+
+/S1defs [
+	/underscore		[0 80 500 0]
+	/endash			[7 90 650 0]
+] def
+%
+% Tries to round clipping path dimensions, as stored in array pagebbox, so they
+% match one of the known sizes in the papersizes array. Lower left coordinates
+% are always set to 0.
+%
+
+/roundpagebbox {
+    7 dict begin
+	/papersizes [8.5 inch 11 inch 14 inch 17 inch] def
+
+	/mappapersize {
+		/val exch def
+		/slop .5 inch def
+		/diff slop def
+		/j 0 def
+		0 1 papersizes length 1 sub {
+			/i exch def
+			papersizes i get val sub abs
+			dup diff le {/diff exch def /j i def} {pop} ifelse
+		} for
+		diff slop lt {papersizes j get} {val} ifelse
+	} def
+
+	pagebbox 0 0 put
+	pagebbox 1 0 put
+	pagebbox dup 2 get mappapersize 2 exch put
+	pagebbox dup 3 get mappapersize 3 exch put
+    end
+} bind def
+
+%%EndProlog
+%%BeginSetup
+mark
+/linewidth 0.5 def
+/xoffset 0 def
+/yoffset 0 def
+/#copies 1 store
+/magnification 1 def
+%%FormsPerPage: 1
+/formsperpage 1 def
+%%Patch from lp
+%%EndPatch
+/landscape false def
+/resolution 720 def
+setup
+2 setdecoding
+%%EndSetup
+%%Page: 1 1
+/saveobj save def
+mark
+1 pagesetup
+12 B f
+(Engineering Radix Sort)2 1215 1 2272 1230 t
+10 I f
+(Peter M. McIlroy)2 695 1 2532 1470 t
+(Keith Bostic)1 492 1 2634 1650 t
+10 R f
+(Computer Science Research Group)3 1405 1 2177 1830 t
+(University of California at Berkeley)4 1442 1 2159 1950 t
+10 I f
+(M. Douglas McIlroy)2 818 1 2471 2190 t
+10 R f
+(AT&T Bell Laboratories)2 993 1 2383 2370 t
+10 I f
+(ABSTRACT)2643 2750 w
+10 R f
+( methods have excellent asymptotic performance on string data, for)9 2797(Radix sorting)1 553 2 1330 3010 t
+( for use in large byte-)5 1031( Attractive)1 485(which comparison is not a unit-time operation.)6 2084 3 1080 3130 t
+( by more eas-)3 558(addressable memories, these methods have nevertheless long been eclipsed)8 3042 2 1080 3250 t
+( list)1 148( ways to sort strings by bytes left to right\320a stable)10 2048( Three)1 283(ily programmed algorithms.)2 1121 4 1080 3370 t
+( illustrated with)2 646(sort, a stable two-array sort, and an in-place ``American flag'' sort\320are)10 2954 2 1080 3490 t
+( sorting, all three perform comparably, usually run-)7 2063( heavy-duty)1 477( For)1 192(practical C programs.)2 868 4 1080 3610 t
+( recommend American flag sort for)5 1470( We)1 200( as fast as a good quicksort.)6 1173(ning at least twice)3 757 4 1080 3730 t
+(general use.)1 476 1 1080 3850 t
+10 B f
+(1. Introduction)1 670 1 720 4210 t
+10 R f
+( the)1 160( Deal)1 250( idea is simple.)3 636( The)1 217(For sorting strings you can't beat radix sort\320or so the theory says.)11 2807 5 970 4366 t
+( the strings that)3 623( next gets all)3 520( The)1 209( pile gets all the empty strings.)6 1249( One)1 220(strings into piles by their first letters.)6 1499 6 720 4486 t
+(begin with)1 428 1 720 4606 t
+10 I f
+(A)1176 4606 w
+10 R f
+(-; another gets)2 577 1 1237 4606 t
+10 I f
+(B)1842 4606 w
+10 R f
+( further letters)2 573( these piles recursively on second and)6 1526( Split)1 243(- strings, and so on.)4 795 4 1903 4606 t
+( strings are)2 450( The)1 211( split, pick up all the piles in order.)8 1442( there are no more piles to)6 1084( When)1 295(until the strings end.)3 838 6 720 4726 t
+(sorted.)720 4846 w
+( looks at just enough letters in each string to distinguish it)11 2331( It)1 112(In theory radix sort is perfectly efficient.)6 1627 3 970 5002 t
+( is no way to inspect fewer letters and still be sure that the strings are properly)16 3325( There)1 295( the rest.)2 367(from all)1 333 4 720 5122 t
+( this theory doesn't tell the whole story: it's hard to keep track of the piles.)15 2980(sorted. But)1 464 2 720 5242 t
+( The)1 207(Our main concern is bookkeeping, which can make or break radix sorting as a practical method.)15 3863 2 970 5398 t
+( be read as a thorough answer to excercises posed in Knuth chapters 5.2 and 5.2.5, where the gen-)18 3901(paper may)1 419 2 720 5518 t
+(eral plan is laid out.)4 867 1 720 5638 t
+8 R f
+(1)1595 5606 w
+10 R f
+( that we refer to: radix)5 989(Knuth also describes the other classical sorting methods)7 2372 2 1679 5638 t
+(exchange, quicksort, insertion sort, Shell sort, and little-endian radix sort.)9 2936 1 720 5758 t
+10 B f
+( exchange)1 419(1.1. Radix)1 456 2 720 5998 t
+10 R f
+( simple method of)3 758(For a binary alphabet, radix sorting specializes to the)8 2196 2 970 6154 t
+10 I f
+(radix exchange.)1 648 1 3960 6154 t
+8 R f
+(2)4616 6122 w
+10 R f
+(Split the)1 348 1 4692 6154 t
+( classical)1 364( For)1 190( strings, those that begin with 0, and those that begin with 1.)12 2420(strings into three piles: the empty)5 1346 4 720 6274 t
+( there is no pile for empty)6 1116( Then)1 269( further that the strings are all the same length.)9 1984(radix exchange assume)2 951 4 720 6394 t
+( test instead of quicksort's comparison to decide)7 1949(strings and splitting can be done as in quicksort, with a bit)11 2371 2 720 6514 t
+(which pile a string belongs in.)5 1205 1 720 6634 t
+(Program 1.1 sorts the part of array)6 1402 1 970 6790 t
+10 I f
+(A)2402 6790 w
+10 R f
+(that runs from)2 576 1 2493 6790 t
+10 I f
+(A)3100 6790 w
+10 R f
+([)3169 6790 w
+10 I f
+(lo)3210 6790 w
+10 R f
+(] to)1 142 1 3296 6790 t
+10 I f
+(A)3469 6790 w
+10 R f
+([)3538 6790 w
+10 I f
+(hi)3579 6790 w
+10 S f
+(-)3681 6790 w
+10 R f
+( the strings in this range)5 988( All)1 184(1 ].)1 116 3 3752 6790 t
+(have the same)2 577 1 720 6910 t
+10 I f
+(b)1328 6910 w
+10 R f
+(-bit prefix, say)2 595 1 1378 6910 t
+10 I f
+(x)2003 6910 w
+10 R f
+( function)1 363(-. The)1 268 2 2047 6910 t
+10 CW f
+(split)2708 6910 w
+10 R f
+(moves strings with prefix)3 1034 1 3038 6910 t
+10 I f
+(x)4102 6910 w
+10 R f
+(0- to the beginning of)4 886 1 4154 6910 t
+( from)1 235(the array,)1 391 2 720 7030 t
+10 I f
+(A)1387 7030 w
+10 R f
+( through)1 352([ 0 ])2 132 2 1456 7030 t
+10 I f
+(A)1981 7030 w
+10 R f
+([)2050 7030 w
+10 I f
+(mid)2091 7030 w
+10 S f
+(-)2265 7030 w
+10 R f
+( and strings with prefix)4 991(1 ],)1 116 2 2336 7030 t
+10 I f
+(x)3484 7030 w
+10 R f
+(1- to the end, from)4 810 1 3536 7030 t
+10 I f
+(A)4387 7030 w
+10 R f
+([)4456 7030 w
+10 I f
+(mid)4497 7030 w
+10 R f
+(] through)1 385 1 4655 7030 t
+10 I f
+(A)720 7150 w
+10 R f
+([)789 7150 w
+10 I f
+(hi)830 7150 w
+10 S f
+(-)932 7150 w
+10 R f
+(1 ].)1 116 1 1003 7150 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 1 1
+%%Page: 2 2
+/saveobj save def
+mark
+2 pagesetup
+10 R f
+(- 2 -)2 166 1 2797 480 t
+10 B f
+(Program 1.1)1 532 1 2739 876 t
+9 CW f
+(RadixExchange\(A, lo, hi, b\) =)4 1566 1 970 1022 t
+(if hi \261 lo)3 540 1 1402 1132 t
+9 S f
+(\243)1996 1132 w
+9 CW f
+(1)2101 1132 w
+(then return)1 594 1 1834 1242 t
+(if b)1 216 1 1402 1352 t
+9 S f
+(\263)1672 1352 w
+9 CW f
+(length\(A[lo]\))1777 1352 w
+(then return)1 594 1 1834 1462 t
+(mid := Split\(A, lo, hi, b\))5 1404 1 1402 1572 t
+(RadixExchange\(A, lo, mid, b+1\))3 1620 1 1402 1682 t
+(RadixExchange\(A, mid, hi, b+1\))3 1620 1 1402 1792 t
+10 R f
+(To sort an)2 405 1 720 1912 t
+10 I f
+(n)1150 1912 w
+10 R f
+(-element array, call)2 772 1 1200 1912 t
+9 CW f
+(RadixExchange\(A, 0, n, 0\))3 1350 1 970 2094 t
+10 R f
+( Program 1.2.)2 548(When strings can have different lengths, a full three-way split is needed, as in)13 3115 2 970 2250 t
+8 R f
+(3)4641 2218 w
+10 R f
+(The pile)1 332 1 4708 2250 t
+(of finished strings, with value)4 1227 1 720 2370 t
+10 I f
+(x)1981 2370 w
+10 R f
+( at)1 105(, say, begins)2 512 2 2025 2370 t
+10 I f
+(A)2675 2370 w
+10 R f
+([)2744 2370 w
+10 I f
+(lo)2785 2370 w
+10 R f
+(]; the)1 216 1 2871 2370 t
+10 I f
+(x)3120 2370 w
+10 R f
+(0- pile begins at)3 665 1 3172 2370 t
+10 I f
+(A)3870 2370 w
+10 R f
+([)3939 2370 w
+10 I f
+(i)3980 2370 w
+10 R f
+( the)1 155(0 ];)1 119 2 4016 2370 t
+10 I f
+(x)4323 2370 w
+10 R f
+(1- pile begins at)3 665 1 4375 2370 t
+10 I f
+(A)720 2490 w
+10 R f
+([)789 2490 w
+10 I f
+(i)830 2490 w
+10 R f
+(1 ].)1 116 1 866 2490 t
+10 B f
+(Program 1.2.)1 557 1 2726 2646 t
+9 CW f
+(RadixExchange\(A, lo, hi, b\) =)4 1566 1 970 2792 t
+(if hi - lo)3 540 1 1402 2902 t
+9 S f
+(\243)1996 2902 w
+9 CW f
+(1)2101 2902 w
+(then return)1 594 1 1834 3012 t
+(\(i0, i1\) := Split3\(A, lo, hi, b\))6 1728 1 1402 3122 t
+(RadixExchange\(A, i0, i1, b+1\))3 1566 1 1402 3232 t
+(RadixExchange\(A, i1, hi, b+1\))3 1566 1 1402 3342 t
+10 R f
+( three mixed colors)3 807(Three-way splitting is the famous problem of the Dutch national flag: separate)11 3263 2 970 3498 t
+( flag.)1 205(into bands like the red, white and blue of the)9 1790 2 720 3618 t
+8 R f
+(4)2723 3586 w
+10 R f
+(For us, the three colors are)5 1064 1 2788 3618 t
+10 S f
+(\306)3877 3618 w
+10 R f
+( recipe)1 268( A)1 122(\(no bit\), 0 and 1.)4 666 3 3984 3618 t
+( index)1 251( The)1 209( Program 1.3.)2 552(for splitting is given in Figure 1.1 and)7 1538 4 720 3738 t
+10 I f
+(i)3299 3738 w
+10 R f
+(0 points to the beginning of the 0- pile,)8 1590 1 3335 3738 t
+10 I f
+(i)4954 3738 w
+10 R f
+(1)4990 3738 w
+(points just beyond the end of the 0- pile, and)9 1818 1 720 3858 t
+10 I f
+(i)2567 3858 w
+10 R f
+( notation)1 356( The)1 208( to the beginning of the 1- pile.)7 1259(2 points)1 324 4 2603 3858 t
+10 I f
+(A)4778 3858 w
+10 R f
+([)4847 3858 w
+10 I f
+(i)4888 3858 w
+10 R f
+(].)4924 3858 w
+10 I f
+(b)4990 3858 w
+10 R f
+(denotes the)1 458 1 720 3978 t
+10 I f
+(b)1209 3978 w
+10 R f
+(th bit, counted from 0, in string)6 1286 1 1259 3978 t
+10 I f
+(A)2576 3978 w
+10 R f
+([)2645 3978 w
+10 I f
+(i)2686 3978 w
+10 R f
+(]. When)1 352 1 2722 3978 t
+10 CW f
+(Split3)3106 3978 w
+10 R f
+(finishes,)3498 3978 w
+10 I f
+(i)3866 3978 w
+10 R f
+(1 points to the beginning of)5 1138 1 3902 3978 t
+( test for)2 305( The)1 205(the 1- pile as desired.)4 851 3 720 4098 t
+10 S f
+(\306)2106 4098 w
+10 R f
+(is figurative; it stands for a test for end of string.)10 1934 1 2213 4098 t
+cleartomark
+saveobj restore
+%%BeginGlobal
+%
+% Version 3.3.1 drawing procedures for dpost. Automatically pulled in when
+% needed.
+%
+
+/inpath false def
+/savematrix matrix def
+
+/Dl {
+	inpath
+		{pop pop neg lineto}
+		{newpath neg moveto neg lineto stroke}
+	ifelse
+} bind def
+
+/De {
+	/y1 exch 2 div def
+	/x1 exch 2 div def
+	/savematrix savematrix currentmatrix def
+	neg exch x1 add exch translate
+	x1 y1 scale
+	0 0 1 0 360
+	inpath
+		{1 0 moveto arc savematrix setmatrix}
+		{newpath arc savematrix setmatrix stroke}
+	ifelse
+} bind def
+
+/Da {
+	/dy2 exch def
+	/dx2 exch def
+	/dy1 exch def
+	/dx1 exch def
+	dy1 add neg exch dx1 add exch
+	dx1 dx1 mul dy1 dy1 mul add sqrt
+	dy1 dx1 neg atan
+	dy2 neg dx2 atan
+	inpath
+		{arc}
+		{newpath arc stroke}
+	ifelse
+} bind def
+
+/DA {
+	/dy2 exch def
+	/dx2 exch def
+	/dy1 exch def
+	/dx1 exch def
+	dy1 add neg exch dx1 add exch
+	dx1 dx1 mul dy1 dy1 mul add sqrt
+	dy1 dx1 neg atan
+	dy2 neg dx2 atan
+	inpath
+		{arcn}
+		{newpath arcn stroke}
+	ifelse
+} bind def
+
+/Ds {
+	/y2 exch def
+	/x2 exch def
+	/y1 exch def
+	/x1 exch def
+	/y0 exch def
+	/x0 exch def
+	x0 5 x1 mul add 6 div
+	y0 5 y1 mul add -6 div
+	x2 5 x1 mul add 6 div
+	y2 5 y1 mul add -6 div
+	x1 x2 add 2 div
+	y1 y2 add -2 div
+	inpath
+		{curveto}
+		{newpath x0 x1 add 2 div y0 y1 add -2 div moveto curveto stroke}
+	ifelse
+} bind def
+%%EndGlobal
+/saveobj save def
+mark
+10 R f
+1800 4544 1800 4760 Dl
+2340 4544 1800 4544 Dl
+2340 4760 2340 4544 Dl
+1800 4760 2340 4760 Dl
+10 S f
+(\306)2029 4672 w
+10 I f
+(lo)1800 4506 w
+2376 4760 2340 4760 Dl
+2448 4760 2412 4760 Dl
+2448 4724 2448 4760 Dl
+2448 4664 2448 4700 Dl
+2448 4604 2448 4640 Dl
+2448 4544 2448 4580 Dl
+2412 4544 2448 4544 Dl
+2340 4544 2376 4544 Dl
+2340 4580 2340 4544 Dl
+2340 4640 2340 4604 Dl
+2340 4700 2340 4664 Dl
+2340 4760 2340 4724 Dl
+10 R f
+(0)2369 4672 w
+10 I f
+(i)2340 4506 w
+10 R f
+(0)2376 4506 w
+2340 4544 2340 4760 Dl
+2880 4544 2340 4544 Dl
+2880 4760 2880 4544 Dl
+2340 4760 2880 4760 Dl
+(0)2585 4672 w
+cleartomark
+saveobj restore
+%%BeginGlobal
+%
+% Color and reverse video support for dpost. A call made to setcolor with two
+% arguments implies reverse video printing.
+%
+
+/rgb {setrgbcolor} bind def
+/hsb {sethsbcolor} bind def
+
+/colordict 50 dict dup begin
+	/red			{ 1 0 0 } def
+	/green			{ 0 1 0 } def
+	/blue			{ 0 0 1 } def
+	/cyan			{ 0 1 1 } def
+	/magenta		{ 1 0 1 } def
+	/yellow			{ 1 1 0 } def
+	/white			{ 1 1 1 } def
+	/black			{ 0 0 0 } def
+end def
+
+/setcolor {
+	counttomark 1 eq {
+		dup colordict exch known not {pop /black} if
+		colordict exch get exec setrgbcolor
+	} if
+	counttomark 2 eq {
+		/backcolor exch def
+		/textcolor exch def
+		colordict backcolor known not colordict textcolor known not or {
+			/backcolor colordict /black get def
+			/textcolor colordict /white get def
+		} if
+		/backcolor colordict backcolor get def
+		/textcolor colordict textcolor get def
+		/dY1 0 def
+		/dY2 0 def
+		textcolor exec setrgbcolor
+	} if
+} bind def
+
+/drawrvbox {
+	/x2 exch def
+	/x1 exch def
+
+	currentpoint dup
+	/y1 exch def
+	/y2 exch def pop
+
+	dY1 0 eq dY2 0 eq and {
+		currentfont /FontBBox get aload pop
+		currentfont /FontMatrix get dtransform /dY2 exch def pop
+		currentfont /FontMatrix get dtransform /dY1 exch def pop
+	} if
+
+	/y1 y1 dY1 add def
+	/y2 y2 dY2 add def
+
+	backcolor exec setrgbcolor
+	newpath
+	x1 y1 moveto
+	x2 y1 lineto
+	x2 y2 lineto
+	x1 y2 lineto
+	closepath fill
+	textcolor exec setrgbcolor
+} bind def
+%%EndGlobal
+/saveobj save def
+mark
+gsave
+newpath
+2880 4760 m
+/inpath true def
+ 0.8 setgray
+10 R f
+2880 4544 2880 4760 Dl
+2988 4544 2880 4544 Dl
+2988 4760 2988 4544 Dl
+2880 4760 2988 4760 Dl
+ gsave eofill grestore 0.8 setgray 
+grestore
+/inpath false def
+10 R f
+2916 4760 2880 4760 Dl
+2988 4760 2952 4760 Dl
+2988 4724 2988 4760 Dl
+2988 4664 2988 4700 Dl
+2988 4604 2988 4640 Dl
+2988 4544 2988 4580 Dl
+2952 4544 2988 4544 Dl
+2880 4544 2916 4544 Dl
+2880 4580 2880 4544 Dl
+2880 4640 2880 4604 Dl
+2880 4700 2880 4664 Dl
+2880 4760 2880 4724 Dl
+10 S f
+(\306)2893 4672 w
+10 I f
+(i)2880 4506 w
+10 R f
+(1)2916 4506 w
+2880 4544 2880 4760 Dl
+3420 4544 2880 4544 Dl
+3420 4760 3420 4544 Dl
+2880 4760 3420 4760 Dl
+(?)3128 4672 w
+3420 4544 3420 4760 Dl
+3960 4544 3420 4544 Dl
+3960 4760 3960 4544 Dl
+3420 4760 3960 4760 Dl
+(1)3665 4672 w
+10 I f
+(i)3420 4506 w
+10 R f
+(2)3456 4506 w
+10 I f
+(hi)3960 4506 w
+2394 4761 2466 4773 Dl
+2394 4760 2452 4806 Dl
+2394 4760 270 -509 270 509 Da
+2933 4760 2875 4806 Dl
+2933 4761 2861 4773 Dl
+2880 4414 2880 4414 2934 4256 Ds
+2880 4414 2934 4256 2988 4414 Ds
+2934 4256 2988 4414 2988 4414 Ds
+2987 4414 2947 4352 Dl
+2987 4414 2981 4340 Dl
+2340 4414 2340 4414 2394 4256 Ds
+2340 4414 2394 4256 2448 4414 Ds
+2394 4256 2448 4414 2448 4414 Ds
+2447 4414 2407 4352 Dl
+2447 4414 2441 4340 Dl
+1800 5264 1800 5480 Dl
+2340 5264 1800 5264 Dl
+2340 5480 2340 5264 Dl
+1800 5480 2340 5480 Dl
+10 S f
+(\306)2029 5392 w
+10 I f
+(lo)1800 5226 w
+2340 5264 2340 5480 Dl
+2880 5264 2340 5264 Dl
+2880 5480 2880 5264 Dl
+2340 5480 2880 5480 Dl
+10 R f
+(0)2585 5392 w
+10 I f
+(i)2340 5226 w
+10 R f
+(0)2376 5226 w
+gsave
+newpath
+2880 5480 m
+/inpath true def
+ 0.8 setgray
+2880 5264 2880 5480 Dl
+2988 5264 2880 5264 Dl
+2988 5480 2988 5264 Dl
+2880 5480 2988 5480 Dl
+ gsave eofill grestore 0.8 setgray 
+grestore
+/inpath false def
+10 R f
+2916 5480 2880 5480 Dl
+2988 5480 2952 5480 Dl
+2988 5444 2988 5480 Dl
+2988 5384 2988 5420 Dl
+2988 5324 2988 5360 Dl
+2988 5264 2988 5300 Dl
+2952 5264 2988 5264 Dl
+2880 5264 2916 5264 Dl
+2880 5300 2880 5264 Dl
+2880 5360 2880 5324 Dl
+2880 5420 2880 5384 Dl
+2880 5480 2880 5444 Dl
+(0)2909 5392 w
+10 I f
+(i)2880 5226 w
+10 R f
+(1)2916 5226 w
+2880 5264 2880 5480 Dl
+3420 5264 2880 5264 Dl
+3420 5480 3420 5264 Dl
+2880 5480 3420 5480 Dl
+(?)3128 5392 w
+3420 5264 3420 5480 Dl
+3960 5264 3420 5264 Dl
+3960 5480 3960 5264 Dl
+3420 5480 3960 5480 Dl
+(1)3665 5392 w
+10 I f
+(i)3420 5226 w
+10 R f
+(2)3456 5226 w
+10 I f
+(hi)3960 5226 w
+2880 5134 2880 5134 2934 4976 Ds
+2880 5134 2934 4976 2988 5134 Ds
+2934 4976 2988 5134 2988 5134 Ds
+2987 5134 2947 5072 Dl
+2987 5134 2981 5060 Dl
+1800 5984 1800 6200 Dl
+2340 5984 1800 5984 Dl
+2340 6200 2340 5984 Dl
+1800 6200 2340 6200 Dl
+10 S f
+(\306)2029 6112 w
+10 I f
+(lo)1800 5946 w
+2340 5984 2340 6200 Dl
+2880 5984 2340 5984 Dl
+2880 6200 2880 5984 Dl
+2340 6200 2880 6200 Dl
+10 R f
+(0)2585 6112 w
+10 I f
+(i)2340 5946 w
+10 R f
+(0)2376 5946 w
+gsave
+newpath
+2880 6200 m
+/inpath true def
+ 0.8 setgray
+2880 5984 2880 6200 Dl
+2988 5984 2880 5984 Dl
+2988 6200 2988 5984 Dl
+2880 6200 2988 6200 Dl
+ gsave eofill grestore 0.8 setgray 
+grestore
+/inpath false def
+10 R f
+2916 6200 2880 6200 Dl
+2988 6200 2952 6200 Dl
+2988 6164 2988 6200 Dl
+2988 6104 2988 6140 Dl
+2988 6044 2988 6080 Dl
+2988 5984 2988 6020 Dl
+2952 5984 2988 5984 Dl
+2880 5984 2916 5984 Dl
+2880 6020 2880 5984 Dl
+2880 6080 2880 6044 Dl
+2880 6140 2880 6104 Dl
+2880 6200 2880 6164 Dl
+(1)2909 6112 w
+10 I f
+(i)2880 5946 w
+10 R f
+(1)2916 5946 w
+2880 5984 2880 6200 Dl
+3420 5984 2880 5984 Dl
+3420 6200 3420 5984 Dl
+2880 6200 3420 6200 Dl
+(?)3128 6112 w
+3348 6200 3312 6200 Dl
+3420 6200 3384 6200 Dl
+3420 6164 3420 6200 Dl
+3420 6104 3420 6140 Dl
+3420 6044 3420 6080 Dl
+3420 5984 3420 6020 Dl
+3384 5984 3420 5984 Dl
+3312 5984 3348 5984 Dl
+3312 6020 3312 5984 Dl
+3312 6080 3312 6044 Dl
+3312 6140 3312 6104 Dl
+3312 6200 3312 6164 Dl
+(?)3344 6112 w
+3420 5984 3420 6200 Dl
+3960 5984 3420 5984 Dl
+3960 6200 3960 5984 Dl
+3420 6200 3960 6200 Dl
+(1)3665 6112 w
+10 I f
+(i)3420 5946 w
+10 R f
+(2)3456 5946 w
+10 I f
+(hi)3960 5946 w
+2934 6201 3008 6206 Dl
+2934 6201 2996 6240 Dl
+2934 6200 216 -534 216 534 Da
+3365 6201 3303 6240 Dl
+3365 6201 3291 6206 Dl
+3420 5854 3420 5854 3366 5696 Ds
+3420 5854 3366 5696 3312 5904 Ds
+3366 5696 3312 5904 3312 5904 Ds
+3312 5905 3312 5831 Dl
+3312 5904 3347 5839 Dl
+10 B f
+(Figure 1.1.)1 473 1 970 6476 t
+10 R f
+(How)1508 6476 w
+10 CW f
+(split3)1742 6476 w
+10 R f
+( the array hold strings known to have)7 1596( four parts of)3 563(works. The)1 489 3 2142 6476 t
+(ended \()1 315 1 970 6596 t
+10 S f
+(\306)1285 6596 w
+10 R f
+( selected position, unknown strings, and strings)6 2002(\), strings known to have 0 in the)7 1421 2 1367 6596 t
+( unknown string\320)2 762( look at the selected position of the first)8 1622( Repeatedly)1 504(known to have 1 there.)4 932 4 970 6716 t
+( according to the matching diagram.)5 1442( Update)1 338(the shaded box.)2 624 3 970 6836 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 2 2
+%%Page: 3 3
+/saveobj save def
+mark
+3 pagesetup
+10 R f
+(- 3 -)2 166 1 2797 480 t
+10 B f
+(Program 1.3.)1 557 1 2726 876 t
+9 CW f
+(Split3\(A, lo, hi, b\) =)4 1188 1 970 1022 t
+(\(i0, i1, i2\) := \(lo, lo, hi\))6 1512 1 1402 1132 t
+(while i2 > i1 do)4 864 1 1402 1242 t
+(case A[i1].b of)2 810 1 1834 1352 t
+9 S f
+(\306)1834 1462 w
+9 CW f
+( A[i1], i0, i1\) := \(A[i1], A[i0], i0+1, i1+1\))8 2430(: \(A[i0],)1 736 2 1908 1462 t
+( := i1 + 1)4 540(0: i1)1 540 2 1834 1572 t
+( A[i2-1], i2\) := \(A[i2-1], A[i1], i2-1\))6 2106(1: \(A[i1],)1 810 2 1834 1682 t
+(return \(i0, i1\))2 810 1 1402 1792 t
+10 B f
+( to the fore)3 462(1.2. Quicksort)1 628 2 720 2032 t
+10 R f
+(After enjoying a brief popularity, radix exchange was upstaged by quicksort.)10 3186 1 970 2188 t
+8 R f
+(5)4164 2156 w
+10 R f
+(Not only was radix)3 799 1 4241 2188 t
+( Algol, which hid)3 724(exchange usually slower than quicksort, it was not good for programming in Fortran or)13 3596 2 720 2308 t
+( and nearly unbeatable; radix sorting disap-)6 1760( became known as simple)4 1042( Quicksort)1 448(the bits that it depends on.)5 1070 4 720 2428 t
+(peared from textbooks.)2 923 1 720 2548 t
+( Quicksort)1 455( looked at.)2 441(Nevertheless, radix exchange cannot be bettered in respect to amount of data)11 3174 3 970 2704 t
+(doesn't even come close. Quicksort on average performs)7 2392 1 720 2824 t
+10 S f
+(Q)3154 2824 w
+10 R f
+(\( log)1 169 1 3236 2824 t
+10 I f
+(n)3413 2824 w
+10 R f
+(\) comparisons per string and inspects)5 1569 1 3471 2824 t
+10 S f
+(W)720 2944 w
+10 R f
+(\( log)1 169 1 805 2944 t
+10 I f
+(n)982 2944 w
+10 R f
+( for quicksort is)3 645( this measure the expected running time)6 1616( By)1 171(\) bits per comparison.)3 883 4 1040 2944 t
+10 S f
+(W)4410 2944 w
+10 R f
+(\()4495 2944 w
+10 I f
+(n)4536 2944 w
+10 R f
+(log)4594 2944 w
+7 R f
+(2)4727 2904 w
+10 I f
+(n)4778 2944 w
+10 R f
+(\), for)1 204 1 4836 2944 t
+(radix exchange only)2 813 1 720 3064 t
+10 S f
+(W)1560 3064 w
+10 R f
+(\()1645 3064 w
+10 I f
+(n)1686 3064 w
+10 R f
+(log)1744 3064 w
+10 I f
+(n)1880 3064 w
+10 R f
+( quicksort can ``go quadratic,'' and take time)7 1815(\). Worse,)1 395 2 1938 3064 t
+10 S f
+(W)4174 3064 w
+10 R f
+(\()4259 3064 w
+10 I f
+(n)4300 3064 w
+7 R f
+(2)4361 3024 w
+10 R f
+(log)4412 3064 w
+10 I f
+(n)4548 3064 w
+10 R f
+(\) on unfor-)2 434 1 4606 3064 t
+( quicksort routines have gone quadratic on)6 1709( Production)1 491( is not just an abstract possibility.)6 1349( This)1 230(tunate inputs.)1 541 5 720 3184 t
+(perfectly reasonable inputs.)2 1100 1 720 3304 t
+8 R f
+(6)1828 3272 w
+10 R f
+( Quick-)1 329( exchange are usually swamped by the cost of bit picking.)10 2330(The theoretical advantages of radix)4 1411 3 970 3460 t
+(sort is nimbler in several ways.)5 1243 1 720 3580 t
+10 S f
+(\267)720 3736 w
+10 R f
+(Quicksort can use machine instructions to compare whole words or bytes instead of bits.)13 3534 1 970 3736 t
+10 S f
+(\267)720 3892 w
+10 R f
+( it picks splitting values from the data, quicksort can be expected)11 2591( Because)1 382(Quicksort splits adaptively.)2 1097 3 970 3892 t
+( splits are necessary to realize minimal)6 1679( Such)1 273(to get roughly 50-50 splits even on skewed data.)8 2118 3 970 4012 t
+(expected times in either quicksort or radix exchange.)7 2112 1 970 4132 t
+10 S f
+(\267)720 4288 w
+10 R f
+( the comparison routine and it is ready to handle)9 1937( Change)1 356( sort anything, not just strings.)5 1220(Quicksort can)1 557 4 970 4288 t
+( assumes string data on a finite alphabet, it requires one)10 2216( radix sort intrinsically)3 911( Because)1 383(different data.)1 560 4 970 4408 t
+( dates with quicksort, one might)5 1308( example, to sort)3 678( For)1 193(to make the data fit the routine, not vice versa.)9 1891 4 970 4528 t
+( 11, 1732\) as each key is looked at, while with)10 1883(provide code to parse ordinary notation \(e.g. February)7 2187 2 970 4648 t
+(radix sort one would preconvert all dates to a canonical form \(e.g. 17320211\).)12 3113 1 970 4768 t
+( little extra)2 437( both sort in place, using)5 988( They)1 256(In other ways, quicksort and radix exchange are quite alike.)9 2389 4 970 4924 t
+( need a recursion stack, which we expect to grow to size)11 2376(space. Both)1 504 2 720 5044 t
+10 S f
+(Q)3637 5044 w
+10 R f
+(\( log)1 169 1 3719 5044 t
+10 I f
+(n)3896 5044 w
+10 R f
+( either method, if the)4 883(\). In)1 203 2 3954 5044 t
+( long or have different lengths, it is well to address strings through uniform descriptors and to)16 3898(strings are)1 422 2 720 5164 t
+(sort by rearranging small descriptors instead of big strings.)8 2350 1 720 5284 t
+( bigger machines, the)3 866( With)1 254( era of small memories.)4 956(The wisdom that blesses quicksort dates from the)7 1994 4 970 5440 t
+(difference between)1 764 1 720 5560 t
+10 I f
+(n)1513 5560 w
+10 R f
+(log)1571 5560 w
+10 I f
+(n)1707 5560 w
+10 R f
+(and)1786 5560 w
+10 I f
+(n)1959 5560 w
+10 R f
+(log)2017 5560 w
+7 R f
+(2)2150 5520 w
+10 I f
+(n)2201 5560 w
+10 R f
+( with bigger machines we can afford)6 1475( And)1 226(becomes more significant.)2 1059 3 2280 5560 t
+( the wisdom deserves to be reexamined.)6 1594( Thus)1 250(more space.)1 476 3 720 5680 t
+10 B f
+( sort)1 191(2. List-based)1 570 2 720 5920 t
+10 R f
+( machines, the 8-bit byte is a natural radix, which should overcome the bit-picking)13 3371(For most modern)2 699 2 970 6076 t
+( byte radix makes for 256- or 257-way splitting, depending on how the ends)13 3061( A)1 125(slowness of radix exchange.)3 1134 3 720 6196 t
+( for so many piles of unknown size at)8 1522( raises the problem of managing space)6 1542( This)1 230(of strings are determined.)3 1026 4 720 6316 t
+( to the piles is easy;)5 816( Dealing)1 372( obvious data structure.)3 950( array of linked lists is an)6 1052( An)1 179(each level of recursion.)3 951 6 720 6436 t
+( single list is a)4 585( up the sorted piles and getting them hooked together into a)11 2395( Picking)1 358(just index into the array.)4 982 4 720 6556 t
+( is written in C rather than pseudocode, because)8 1910( It)1 111( 2.1 does the job.)4 683( Program)1 394( little code.)2 447(bit tricky, but takes)3 775 6 720 6676 t
+( input variables are)3 762( The)1 205(the troubles with radix sort are in implementation, not in conception.)10 2748 3 720 6796 t
+10 I f
+(a)970 6952 w
+10 R f
+(a linked list of null-terminated strings.)5 1533 1 1370 6952 t
+10 I f
+(b)970 7072 w
+10 R f
+(the offset of the byte to split on; the strings agree in all earlier bytes.)14 2727 1 1370 7072 t
+10 I f
+(sequel)970 7192 w
+10 R f
+(a sorted linked list of strings that compare greater than the strings in list)13 2867 1 1370 7192 t
+10 I f
+(a)4262 7192 w
+10 R f
+(.)4312 7192 w
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 3 3
+%%Page: 4 4
+/saveobj save def
+mark
+4 pagesetup
+10 R f
+(- 4 -)2 166 1 2797 480 t
+(Three in-line functions are coded as macros:)6 1773 1 720 840 t
+10 CW f
+(ended\()970 996 w
+10 I f
+(a)1330 996 w
+10 R f
+(,)1388 996 w
+10 I f
+(b)1489 996 w
+10 CW f
+(\))1539 996 w
+10 R f
+(tells whether byte position)3 1058 1 1720 996 t
+10 I f
+(b)2803 996 w
+10 R f
+(is just beyond the null byte at the end of string)10 1855 1 2878 996 t
+10 I f
+(a)4758 996 w
+10 R f
+(.)4808 996 w
+10 CW f
+(append\()970 1116 w
+10 I f
+(s)1390 1116 w
+10 R f
+(,)1437 1116 w
+10 I f
+(a)1538 1116 w
+10 CW f
+(\))1588 1116 w
+10 R f
+(appends list)1 475 1 1720 1116 t
+10 I f
+(s)2220 1116 w
+10 R f
+(to the last element of non-empty list)6 1444 1 2284 1116 t
+10 I f
+(a)3753 1116 w
+10 R f
+(.)3803 1116 w
+10 CW f
+(deal\()970 1236 w
+10 I f
+(a)1270 1236 w
+10 R f
+(,)1328 1236 w
+10 I f
+(p)1429 1236 w
+10 CW f
+(\))1479 1236 w
+10 R f
+(removes the first string from list)5 1291 1 1720 1236 t
+10 I f
+(a)3036 1236 w
+10 R f
+(and deals it to pile)4 733 1 3111 1236 t
+10 I f
+(p)3869 1236 w
+10 R f
+(.)3919 1236 w
+( if the list is empty, then the result of sorting it together with)13 2437( First,)1 260(Program 2.1 has four parts.)4 1091 3 970 1392 t
+10 I f
+(sequel)4785 1392 w
+10 R f
+(is)720 1512 w
+10 I f
+(sequel)817 1512 w
+10 R f
+( at ``pile finished,'' if the last byte seen in the strings in list)13 2430(. Next,)1 299 2 1072 1512 t
+10 I f
+(a)3831 1512 w
+10 R f
+(was null \(0\), they cannot be)5 1129 1 3911 1512 t
+( them in front of the)5 832( Put)1 190(sorted further.)1 571 3 720 1632 t
+10 I f
+(sequel)2344 1632 w
+10 R f
+( ``split,'' all strings have a)5 1084( At)1 156(and return the combined list.)4 1170 3 2630 1632 t
+10 I f
+(b)720 1752 w
+10 R f
+( deal the strings out according to byte)7 1578( all the piles and then)5 912( Clear)1 278(th byte.)1 312 4 770 1752 t
+10 I f
+(b)3886 1752 w
+10 R f
+( at)1 108( Finally,)1 370(of each string.)2 590 3 3972 1752 t
+( each stage append to the sorted current pile the)9 1979( At)1 159( first.)1 220(``recur on each pile,'' sort the piles from last to)9 1962 4 720 1872 t
+(sorted list accumulated from all following piles.)6 1918 1 720 1992 t
+10 B f
+(Program 2.1.)1 557 1 2255 2148 t
+10 R f
+(Simple list-based sort.)2 892 1 2862 2148 t
+9 CW f
+(typedef struct list {)3 1134 1 970 2294 t
+( *next;)1 594(struct list)1 594 2 1402 2404 t
+( *data;)1 486(unsigned char)1 702 2 1402 2514 t
+(} list;)1 378 1 970 2624 t
+(list *rsort\(list *a, int b, list *sequel\))6 2214 1 970 2767 t
+({)970 2877 w
+( && a\261>data[b\2611]==0)2 1026( b>0)1 432(#define ended\(a, b\))2 1026 3 970 2987 t
+( while\(tmp\261>next\) tmp=tmp\261>next; tmp\261>next=s)3 2376( tmp=a;)1 540(#define append\(s, a\))2 1080 3 970 3097 t
+( = a\261>next, a\261>next = p, p = a, a = tmp)11 2106( tmp)1 486(#define deal\(a, p\))2 972 3 970 3207 t
+( *tmp;)1 324(list *pile[256],)1 1458 2 1402 3350 t
+(int i;)1 972 1 1402 3460 t
+(if\(a == 0\))2 540 1 1402 3603 t
+(return sequel;)1 756 1 1834 3713 t
+( pile finished */)3 918( /*)1 1350(if\(ended\(a, b\)\) {)2 918 3 1402 3856 t
+(append\(sequel, a\);)1 972 1 1834 3966 t
+(return a;)1 486 1 1834 4076 t
+(})1402 4186 w
+( split */)2 486( /*)1 972(for\(i = 256; \261\261i >= 0; \))6 1296 3 1402 4329 t
+(pile[i] = 0;)2 648 1 1834 4439 t
+(while\(a\))1402 4549 w
+(deal\(a, pile[a\261>data[b]]\);)1 1404 1 1834 4659 t
+( recur on each pile */)5 1188( /*)1 972(for\(i = 256; \261\261i >= 0; \))6 1296 3 1402 4802 t
+(sequel = rsort\(pile[i], b+1, sequel\);)4 1998 1 1834 4912 t
+(return sequel;)1 756 1 1402 5055 t
+(})970 5165 w
+10 R f
+( possibly at the first)4 845( Except)1 341( trouble.)1 347( piles are the root of the)6 1026( Empty)1 330(Program 2.1 works\320slowly.)2 1181 6 970 5321 t
+( ``sorting'' as many)3 793(level or two of recursion, most piles will be empty. The cost of clearing and recursively)15 3527 2 720 5441 t
+( easy improvements will speed things up.)6 1652( Some)1 278(as 255 empty piles for each byte of data is overwhelming.)10 2310 3 720 5561 t
+( deals, meanwhile stacking)3 1082( deal into the same array and clear only the occupied piles between)12 2683(I2.1 Always)1 555 3 720 5717 t
+(the occupied piles out of the way.)6 1345 1 970 5837 t
+( small)1 249( the number of occupied piles is unpredictable, and probably)9 2472( Since)1 278( the stack directly.)3 750(I2.2 Manage)1 571 5 720 5993 t
+( piles may be stacked in)5 992( The)1 212( first level or two of recursion, much space can be saved.)11 2346(except at the)2 520 4 970 6113 t
+(first-to-last order so they will pop off in last-to-first order just as in Program 2.1.)14 3219 1 970 6233 t
+( try to split singleton piles.)5 1068(I2.3 Don't)1 483 2 720 6389 t
+( judiciously: eliminate redundant computation; replace subscripts by pointers.)8 3106(I2.4 Optimize)1 622 2 720 6545 t
+( looking at empty piles.)4 942(I2.5 Avoid)1 500 2 720 6701 t
+( the state-carrying parameters)3 1221( Here)1 256(Program 2.2 implements improvements I2.1-I2.3.)4 2030 3 970 6857 t
+10 I f
+(b)4515 6857 w
+10 R f
+(and)4603 6857 w
+10 I f
+(sequel)4785 6857 w
+10 R f
+(become hidden, as they should be.)5 1373 1 720 6977 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 4 4
+%%Page: 5 5
+/saveobj save def
+mark
+5 pagesetup
+10 R f
+(- 5 -)2 166 1 2797 480 t
+10 B f
+(Program 2.2.)1 557 1 1489 876 t
+10 R f
+( Program 2.1 for some macros.)5 1234( See)1 194(Improved list-based sort.)2 996 3 2096 876 t
+9 CW f
+(list* rsort\(list* a\))2 1080 1 970 1022 t
+({)970 1132 w
+( == 0)2 270( a\261>next)1 594(#define singleton\(a\))1 1080 3 970 1242 t
+( = a, \(sp++\)\261>sb = b)5 1080( sp\261>sa)1 648(#define push\(a, b\))2 972 3 970 1352 t
+( = \(\261\261sp\)\261>sa, b = sp\261>sb)5 1350( a)1 432(#define pop\(a, b\))2 918 3 970 1462 t
+( <= stack\))2 540( \(sp)1 378(#define stackempty\(\))1 1080 3 970 1572 t
+(struct { list *sa; int sb; } stack[SIZE], *sp = stack;)10 2916 1 1402 1715 t
+( *pile[256];)1 864(static list)1 594 2 1402 1825 t
+( *sequel = 0;)3 702(list *tmp,)1 1134 2 1402 1935 t
+( b;)1 162(int i,)1 972 2 1402 2045 t
+(if\(a\))1402 2188 w
+(push\(a, 0\);)1 594 1 1834 2298 t
+(while\(!stackempty\(\)\) {)1 1188 1 1402 2441 t
+(pop\(a, b\);)1 540 1 1834 2551 t
+(if\(singleton\(a\) || ended\(a, b\)\) { /* pile finished */)8 2862 1 1834 2661 t
+(append\(sequel, a\);)1 972 1 2266 2771 t
+(sequel = a;)2 594 1 2266 2881 t
+(continue;)2266 2991 w
+(})1834 3101 w
+( split */)2 486(while\(a\) /*)1 1944 2 1834 3244 t
+(deal\(a, pile[a\261>data[b]]\);)1 1404 1 2266 3354 t
+( stack the pieces */)4 1080( /*)1 756(for\(i = 0; i<256; i++\))4 1188 3 1834 3497 t
+(if\(pile[i]\) {)1 702 1 2266 3607 t
+(push\(pile[i], b+1\);)1 1026 1 2698 3717 t
+(pile[i] = 0;)2 648 1 2698 3827 t
+(})2266 3937 w
+(})1402 4047 w
+(return sequel;)1 756 1 1402 4190 t
+(})970 4300 w
+10 R f
+( about 15 times as fast as Program 2.1\320not a bad return)11 2291(On typical alphabetic data Program 2.2 runs)6 1779 2 970 4456 t
+( time for Program 2.2 is still wasted)7 1454( of the)2 263( Most)1 260(from such simple optimizations, but not yet good enough.)8 2343 4 720 4576 t
+( I2.5, avoiding looking at empty piles, which can be)9 2157( we turn to improvement)4 1020( Thus)1 258(scanning empty piles.)2 885 4 720 4696 t
+(done in many ways.)3 799 1 720 4816 t
+( Single-case)1 516( bunched.)1 394(For textual keys, such as names or decimal numbers, the piles are likely to be)14 3160 3 970 4972 t
+( exploit bunching, we use a simple)6 1391( To)1 162( piles, digits only 10.)4 844(letters span only 26 of the 256)6 1222 4 720 5092 t
+10 I f
+(pile-span)4365 5092 w
+10 R f
+(heuris-)4763 5092 w
+( finished 0- pile is an expected outlier and is kept track of)12 2308( The)1 206(tic: keep track of the range of occupied piles.)8 1806 3 720 5212 t
+(separately.)720 5332 w
+( factor of 100 on typical inputs.)6 1311(Taken together, improvements I2.1-I2.5 speed up Program 2.1 by a)9 2759 2 970 5488 t
+( to 100,000)2 463(The result, Program A in the appendix, is a creditable routine. It usually sorts arrays of 10,000)16 3857 2 720 5608 t
+(keys twice as fast as do competitive quicksorts.)7 1892 1 720 5728 t
+( are built by pushing records on the front of)9 1793( piles)1 219( Because)1 387(None of our programs so far sorts stably.)7 1671 4 970 5884 t
+( sort we can reverse each)5 1043( stabilize the)2 525( To)1 171(lists, the order of equal-keyed records is reversed at each deal.)10 2581 4 720 6004 t
+( we can maintain the piles in forward order by keeping)10 2294( Alternatively)1 588(backwards pile as we append to it.)6 1438 3 720 6124 t
+( times differ negligibly among)4 1284( Sorting)1 362( A does the latter.)4 779( Program)1 412(track of head and tail of each pile.)7 1483 5 720 6244 t
+(forward/reverse and stable/unstable versions.)3 1801 1 720 6364 t
+10 B f
+( sort)1 191(3. Two-array)1 585 2 720 6604 t
+10 R f
+( exchange, the two piles)4 998( basic radix)2 476( In)1 141(Suppose the strings come in an array as for radix exchange.)10 2455 4 970 6760 t
+( larger radixes, the positions of the piles)7 1598( For)1 189( known positions against the bottom and top of the array.)10 2279(live in)1 254 4 720 6880 t
+( the sizes of)3 492( Knowing)1 428( calculated in an extra pass that tallies how many strings belong in each pile.)14 3138(can be)1 262 4 720 7000 t
+(the piles, we don't need linked lists.)6 1438 1 720 7120 t
+( moving them as a block to the auxiliary array)9 1965(Program 3.1 gets the strings home by)6 1569 2 970 7276 t
+10 I f
+(ta)4543 7276 w
+10 R f
+(, and then)2 419 1 4621 7276 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 5 5
+%%Page: 6 6
+/saveobj save def
+mark
+6 pagesetup
+10 R f
+(- 6 -)2 166 1 2797 480 t
+( upper ends of the places are precomputed in array)9 2058( The)1 210( back to its proper place.)5 1006(moving each element)2 866 4 720 840 t
+10 I f
+(pile)4890 840 w
+10 R f
+( Ele-)1 227( 4.\))1 144( ``backward'' choice is for harmony with the programs in section)10 2705( \(This)1 271(as shown in Figure 4.1.)4 973 5 720 960 t
+( Program 2.2, the stack)4 925( in)1 105( As)1 163(ments are moved stably; equal elements retain the order they had in the input.)13 3127 4 720 1080 t
+(is managed explicitly; the stack has a third field to hold the length of each subarray.)15 3345 1 720 1200 t
+10 B f
+(Program 3.1.)1 557 1 2228 1356 t
+10 R f
+(Simple two-array sort.)2 896 1 2835 1356 t
+9 CW f
+(typedef unsigned char *string;)3 1620 1 970 1502 t
+(void rsort\(string *a, int n\))4 1512 1 970 1645 t
+({)970 1755 w
+( = a, sp\261>sn = n, \(sp++\)\261>sb = b)8 1728( sp\261>sa)1 486(#define push\(a, n, b\))3 1134 3 970 1865 t
+( = \(\261\261sp\)\261>sa, n = sp\261>sn, b = sp\261>sb)8 1998( a)1 270(#define pop\(a, n, b\))3 1080 3 970 1975 t
+( <= stack\))2 540( \(sp)1 378(#define stackempty\(\))1 1080 3 970 2085 t
+( > 0 && count[c] > 1)6 1080( c)1 216(#define splittable\(c\))1 1134 3 970 2195 t
+(struct { string *sa; int sn, sb; } stack[SIZE], *sp = stack;)11 3240 1 1402 2338 t
+( *ak, *ta;)2 540(string *pile[256],)1 1458 2 1402 2448 t
+( count[256];)1 918(static int)1 540 2 1402 2558 t
+( b;)1 162(int i,)1 972 2 1402 2668 t
+(ta = malloc\(n*sizeof\(string\)\);)2 1620 1 1402 2811 t
+(push\(a, n, 0\);)2 756 1 1402 3031 t
+(while \(!stackempty\(\)\) {)2 1242 1 1402 3141 t
+(pop\(a, n, b\);)2 702 1 1834 3251 t
+( tally */)2 486( /*)1 1080(for\(i = n; \261\261i >= 0; \))6 1188 3 1834 3394 t
+(count[a[i][b]]++;)2266 3504 w
+( find places */)3 810( /*)1 432(for\(ak = a, i = 0; i < 256; i++\) {)10 1836 3 1834 3647 t
+(if\(splittable\(i\)\))2266 3757 w
+(push\(ak, count[i], b+1\);)2 1296 1 2698 3867 t
+(pile[i] = ak += count[i];)4 1350 1 2266 3977 t
+(count[i] = 0;)2 702 1 2266 4087 t
+(})1834 4197 w
+( move to temp */)4 864( /*)1 1080(for\(i = n; \261\261i >= 0; \))6 1188 3 1834 4340 t
+(ta[i] = a[i];)2 702 1 2266 4450 t
+( move home */)3 702( /*)1 1080(for\(i = n; \261\261i >= 0; \))6 1188 3 1834 4593 t
+(*\261\261pile[ta[i][b]] = ta[i];)2 1404 1 2266 4703 t
+(})1402 4813 w
+(free\(ta\);)1402 4923 w
+(})970 5033 w
+10 R f
+( Program B.)2 496(Program 3.1 is amenable to most of the improvements listed in section 2; they appear in)15 3574 2 970 5189 t
+( is it necessary to record the)6 1162( Nor)1 213( in order.)2 379(In addition, the piles are independent and need not be handled)10 2566 4 720 5309 t
+( observations are embodied in the ``find places'' step of Program B.)11 2717( These)1 288(places of empty piles.)3 871 3 720 5429 t
+( the)1 157( When)1 298( arrays.)1 303(As we observed in the introduction, radix sorting is most advantageous for large)12 3312 4 970 5585 t
+( simple low-overhead comparison-based sorting method such)6 2482(piles get small, we may profitably divert to a)8 1838 2 720 5705 t
+( work well; the exact value is not)7 1393( thresholds between 10 and 50)5 1257( Diversion)1 453(as insertion sort or Shell sort.)5 1217 4 720 5825 t
+( is competitive with list-based sort;)5 1433( It)1 117( hybrid two-array sort.)3 916( B in the appendix is such a)7 1151(critical. Program)1 703 5 720 5945 t
+(which of the two methods wins depends on what computer, compiler, and test data one measures.)15 3894 1 720 6065 t
+( two-array sort dilutes)3 882( But)1 196(For library purposes, an array interface is more natural than a list interface.)12 2992 3 970 6221 t
+(that advantage by using)3 964 1 720 6341 t
+10 S f
+(Q)1715 6341 w
+10 R f
+(\()1797 6341 w
+10 I f
+(n)1838 6341 w
+10 R f
+( next variant overcomes)3 971( Our)1 210( space and dynamic storage allocation.)5 1566(\) working)1 397 4 1896 6341 t
+(this drawback.)1 582 1 720 6461 t
+10 B f
+( flag sort)2 377(4. American)1 546 2 720 6701 t
+10 R f
+( central)1 299( The)1 208( in place.)2 369(Instead of copying data to an auxiliary array and back, we can permute the data)14 3194 4 970 6857 t
+( order an array of)4 703(problem, a nice exercise in practical algorithmics, is to rearrange into ascending)11 3234 2 720 6977 t
+10 I f
+(n)4685 6977 w
+10 R f
+(integer)4763 6977 w
+( to)1 109(values in the range 0)4 846 2 720 7097 t
+10 I f
+(m)1706 7097 w
+10 S f
+(-)1802 7097 w
+10 R f
+(1. Here)1 324 1 1873 7097 t
+10 I f
+(m)2228 7097 w
+10 R f
+(is a value of moderate size, fixed in our case at 256, and)12 2311 1 2331 7097 t
+10 I f
+(n)4673 7097 w
+10 R f
+(is arbi-)1 286 1 4754 7097 t
+( cases are the partition step of quicksort \()8 1825(trary. Special)1 580 2 720 7217 t
+10 I f
+(m)3125 7217 w
+10 S f
+(=)3246 7217 w
+10 R f
+( problem)1 380(2\) and the Dutch national flag)5 1310 2 3350 7217 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 6 6
+%%Page: 7 7
+/saveobj save def
+mark
+7 pagesetup
+10 R f
+(- 7 -)2 166 1 2797 480 t
+(\()720 840 w
+10 I f
+(m)753 840 w
+10 S f
+(=)874 840 w
+10 R f
+( analogy with the latter, we call the general problem the)10 2286(3\). By)1 281 2 978 840 t
+10 I f
+( problem.)1 390(American flag)1 575 2 3576 840 t
+10 R f
+(\(The many)1 442 1 4598 840 t
+( in the original)3 628(stripes are understood to be labeled distinctly, as if with the names of the several states)15 3692 2 720 960 t
+(American union.\))1 704 1 720 1080 t
+( effect of the ``move)4 831( The)1 208( differs from the two-array sort mainly in its final phase.)10 2279(American flag sort)2 752 4 970 1236 t
+( is attained by the ``permute home'' phase shown in)9 2158(to temp'' and ``move home'' phases of Program 3.1)8 2162 2 720 1356 t
+( phase fills piles from the top, making room by cyclically displacing)11 2759( This)1 231( 4.1-4.4.)1 336(Program 4.1 and Figures)3 994 4 720 1476 t
+(elements from pile to pile.*)4 1102 1 720 1596 t
+(Let)970 1752 w
+10 I f
+(a)1133 1752 w
+10 R f
+([)1191 1752 w
+10 I f
+(k)1232 1752 w
+10 R f
+( this)1 176( Displace)1 405( in place.)2 375(] be the first element of the first pile not yet known to be completely)14 2800 4 1284 1752 t
+(element out of line to)4 859 1 720 1872 t
+10 I f
+(r)1605 1872 w
+10 R f
+( Let)1 184(\(Figure 4.2\).)1 503 2 1670 1872 t
+10 I f
+(c)2382 1872 w
+10 R f
+( Find)1 234(be the number of the pile the displaced element belongs to.)10 2355 2 2451 1872 t
+(in the)1 225 1 720 1992 t
+10 I f
+(c)970 1992 w
+10 R f
+(- pile the next unfilled location, just below)7 1699 1 1014 1992 t
+10 I f
+(pile)2738 1992 w
+10 R f
+([)2896 1992 w
+10 I f
+(c)2937 1992 w
+10 R f
+( location is the home of the dis-)7 1263( This)1 228(] \(Figure 4.3\).)2 560 3 2989 1992 t
+( the displaced element home after updating)6 1719( Swap)1 272(placed element.)1 626 3 720 2112 t
+10 I f
+(pile)3362 2112 w
+10 R f
+([)3520 2112 w
+10 I f
+(c)3561 2112 w
+10 R f
+(] to account for it.)4 718 1 3613 2112 t
+( permuta-)1 388(Repeat the operation of Figure 4.3 on the newly displaced element, following a cycle of the)15 3682 2 970 2268 t
+( the home of the displaced element is where the cycle started, at)12 2583(tion until finally)2 659 2 720 2388 t
+10 I f
+(a)3990 2388 w
+10 R f
+([)4048 2388 w
+10 I f
+(k)4089 2388 w
+10 R f
+( the displaced)2 555(]. Move)1 344 2 4141 2388 t
+(element to)1 426 1 720 2508 t
+10 I f
+(a)1178 2508 w
+10 R f
+([)1236 2508 w
+10 I f
+(k)1277 2508 w
+10 R f
+( pile, the current)3 675(]. Its)1 215 2 1329 2508 t
+10 I f
+(c)2251 2508 w
+10 R f
+( to the beginning of the next)6 1175( Skip)1 242( 4.4\).)1 216(- pile, is now filled \(Figure)5 1112 4 2295 2508 t
+(pile by incrementing)2 839 1 720 2628 t
+10 I f
+(k)1590 2628 w
+10 R f
+( in the)2 262(. \(Values)1 391 2 1634 2628 t
+10 I f
+(count)2318 2628 w
+10 R f
+( Clear)1 271( be retained from the ``find places'' phase.\))7 1768(array must)1 430 3 2571 2628 t
+( is easy to check that the code)7 1217( It)1 115( just-completed pile, and begin another permutation cycle.)7 2355(the count of the)3 633 4 720 2748 t
+(works right when)2 699 1 720 2868 t
+10 I f
+(a)1444 2868 w
+10 S f
+(+)1518 2868 w
+10 I f
+(k)1589 2868 w
+10 S f
+(=)1682 2868 w
+10 I f
+(pile)1786 2868 w
+10 R f
+([)1944 2868 w
+10 I f
+(c)1985 2868 w
+10 R f
+(] initially, that is, when the pile is already in place.)10 2023 1 2037 2868 t
+1476 3123 1476 3339 Dl
+2052 3123 1476 3123 Dl
+2052 3339 2052 3123 Dl
+1476 3339 2052 3339 Dl
+10 I f
+(a pile)1 726 1 1476 3086 t
+10 R f
+([ 0 ])2 132 1 2210 3086 t
+2052 3123 2052 3339 Dl
+2484 3123 2052 3123 Dl
+2484 3339 2484 3123 Dl
+2052 3339 2484 3339 Dl
+10 I f
+(pile)2484 3086 w
+10 R f
+([ 1 ])2 132 1 2642 3086 t
+2484 3123 2844 3123 Dl
+2484 3339 2484 3123 Dl
+2844 3339 2484 3339 Dl
+3276 3123 2916 3123 Dl
+3276 3339 3276 3123 Dl
+2916 3339 3276 3339 Dl
+3276 3123 3276 3339 Dl
+3852 3123 3276 3123 Dl
+3852 3339 3852 3123 Dl
+3276 3339 3852 3339 Dl
+10 I f
+(pile)3276 3086 w
+10 R f
+([ 254 ])2 232 1 3434 3086 t
+10 I f
+(pile)3852 3086 w
+10 R f
+([ 255 ])2 232 1 4010 3086 t
+10 S f
+(=)4258 3086 w
+10 I f
+(a)4329 3086 w
+10 S f
+(+)4403 3086 w
+10 I f
+(n)4474 3086 w
+10 B f
+(Figure 4.1.)1 458 1 1979 3573 t
+10 R f
+(Array)2487 3573 w
+10 I f
+(a)2744 3573 w
+10 R f
+(before permuting home.)2 962 1 2819 3573 t
+2340 4188 1764 4188 Dl
+2340 4404 2340 4188 Dl
+1764 4404 2340 4404 Dl
+9 R f
+(in)2017 4268 w
+(place)1957 4364 w
+gsave
+newpath
+2340 4404 m
+/inpath true def
+ 0.8 setgray
+10 R f
+2340 4188 2340 4404 Dl
+2412 4188 2340 4188 Dl
+2412 4404 2412 4188 Dl
+2340 4404 2412 4404 Dl
+ gsave eofill grestore 0.8 setgray 
+grestore
+/inpath false def
+10 R f
+2340 4188 2340 4404 Dl
+3420 4188 2340 4188 Dl
+3420 4404 3420 4188 Dl
+2340 4404 3420 4404 Dl
+10 I f
+(a)2340 4151 w
+10 S f
+(+)2414 4151 w
+10 I f
+(k)2485 4151 w
+3096 4404 3060 4404 Dl
+3177 4404 3141 4404 Dl
+3258 4404 3222 4404 Dl
+3339 4404 3303 4404 Dl
+3420 4404 3384 4404 Dl
+3420 4368 3420 4404 Dl
+3420 4308 3420 4344 Dl
+3420 4248 3420 4284 Dl
+3420 4188 3420 4224 Dl
+3384 4188 3420 4188 Dl
+3303 4188 3339 4188 Dl
+3222 4188 3258 4188 Dl
+3141 4188 3177 4188 Dl
+3060 4188 3096 4188 Dl
+3060 4224 3060 4188 Dl
+3060 4284 3060 4248 Dl
+3060 4344 3060 4308 Dl
+3060 4404 3060 4368 Dl
+9 R f
+(in)3205 4268 w
+(place)3145 4364 w
+10 I f
+(pile)3060 4151 w
+10 R f
+([ ? ])2 126 1 3218 4151 t
+3420 4188 3996 4188 Dl
+3420 4404 3420 4188 Dl
+3996 4404 3420 4404 Dl
+2412 4404 2340 4404 Dl
+2412 4368 2412 4404 Dl
+2412 4308 2412 4344 Dl
+2412 4248 2412 4284 Dl
+2412 4188 2412 4224 Dl
+2340 4188 2412 4188 Dl
+2340 4224 2340 4188 Dl
+2340 4284 2340 4248 Dl
+2340 4344 2340 4308 Dl
+2340 4404 2340 4368 Dl
+2664 3828 2664 4008 Dl
+3096 3828 2664 3828 Dl
+3096 4008 3096 3828 Dl
+2664 4008 3096 4008 Dl
+2879 4008 2577 4116 Dl
+2879 4008 2818 4049 Dl
+2879 4008 2805 4015 Dl
+2376 4188 2411 4176 Dl
+10 I f
+(r)2664 3791 w
+10 B f
+(Figure 4.2.)1 458 1 1479 4638 t
+10 R f
+( shows completed action.)3 1010( Arrow)1 310(After first displacement.)2 973 3 1987 4638 t
+2340 5253 1764 5253 Dl
+2340 5469 2340 5253 Dl
+1764 5469 2340 5469 Dl
+2340 5253 2340 5469 Dl
+3420 5253 2340 5253 Dl
+3420 5469 3420 5253 Dl
+2340 5469 3420 5469 Dl
+3096 5469 3060 5469 Dl
+3177 5469 3141 5469 Dl
+3258 5469 3222 5469 Dl
+3339 5469 3303 5469 Dl
+3420 5469 3384 5469 Dl
+3420 5433 3420 5469 Dl
+3420 5373 3420 5409 Dl
+3420 5313 3420 5349 Dl
+3420 5253 3420 5289 Dl
+3384 5253 3420 5253 Dl
+3303 5253 3339 5253 Dl
+3222 5253 3258 5253 Dl
+3141 5253 3177 5253 Dl
+3060 5253 3096 5253 Dl
+3060 5289 3060 5253 Dl
+3060 5349 3060 5313 Dl
+3060 5409 3060 5373 Dl
+3060 5469 3060 5433 Dl
+9 R f
+(in)3205 5333 w
+(place)3145 5429 w
+10 I f
+(pile)3060 5216 w
+10 R f
+([)3218 5216 w
+10 I f
+(c)3259 5216 w
+10 R f
+(])3311 5216 w
+3060 5469 2988 5469 Dl
+3060 5433 3060 5469 Dl
+3060 5373 3060 5409 Dl
+3060 5313 3060 5349 Dl
+3060 5253 3060 5289 Dl
+2988 5253 3060 5253 Dl
+2988 5289 2988 5253 Dl
+2988 5349 2988 5313 Dl
+2988 5409 2988 5373 Dl
+2988 5469 2988 5433 Dl
+2340 4893 2340 5073 Dl
+2772 4893 2340 4893 Dl
+2772 5073 2772 4893 Dl
+2340 5073 2772 5073 Dl
+10 I f
+(r)2340 4856 w
+(r)2373 5003 w
+10 R f
+([)2420 5003 w
+10 I f
+(b)2461 5003 w
+10 R f
+(])2519 5003 w
+10 S f
+(=)2600 5003 w
+10 I f
+(c)2695 5003 w
+2772 5073 2841 5100 Dl
+2772 5073 2820 5129 Dl
+3024 5253 2772 5073 Dl
+3023 5253 2954 5226 Dl
+3023 5253 2975 5197 Dl
+2987 5123 2986 5049 Dl
+2988 5123 3021 5057 Dl
+2988 5124 2988 5124 3024 4966 Ds
+2988 5124 3024 4966 3060 5124 Ds
+3024 4966 3060 5124 3060 5124 Ds
+3420 5253 3996 5253 Dl
+3420 5469 3420 5253 Dl
+3996 5469 3420 5469 Dl
+2088 5469 2052 5469 Dl
+2151 5469 2115 5469 Dl
+2214 5469 2178 5469 Dl
+2277 5469 2241 5469 Dl
+2340 5469 2304 5469 Dl
+2340 5433 2340 5469 Dl
+2340 5373 2340 5409 Dl
+2340 5313 2340 5349 Dl
+2340 5253 2340 5289 Dl
+2304 5253 2340 5253 Dl
+2241 5253 2277 5253 Dl
+2178 5253 2214 5253 Dl
+2115 5253 2151 5253 Dl
+2052 5253 2088 5253 Dl
+2052 5289 2052 5253 Dl
+2052 5349 2052 5313 Dl
+2052 5409 2052 5373 Dl
+2052 5469 2052 5433 Dl
+9 R f
+(in)2161 5333 w
+(place)2101 5429 w
+10 B f
+(Figure 4.3.)1 458 1 970 5703 t
+10 R f
+( The)1 205(During displacement cycle.)2 1095 2 1478 5703 t
+10 I f
+(b)2803 5703 w
+10 R f
+(th byte of the string pointed to by)7 1336 1 2853 5703 t
+10 I f
+(r)4214 5703 w
+10 R f
+(is)4278 5703 w
+10 I f
+(c)4371 5703 w
+10 R f
+(. Arrows)1 375 1 4415 5703 t
+(show actions to do, except no swap happens in last iteration.)10 2414 1 970 5823 t
+8 S1 f
+(__________________)720 6880 w
+8 R f
+( does without the array)4 745(* A similar algorithm in Knuth chapter 5.2, exercise 13,)9 1808 2 720 6980 t
+8 I f
+(count)3297 6980 w
+8 R f
+(, but involves more case analysis and)6 1206 1 3474 6980 t
+(visits)720 7080 w
+8 I f
+(O)908 7080 w
+8 R f
+(\()972 7080 w
+8 I f
+(n)1004 7080 w
+8 R f
+( speed and simplicity of Program 4.1 justify the cost of the extra array.)13 2245( The)1 164(\) elements more than once.)4 858 3 1050 7080 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 7 7
+%%Page: 8 8
+/saveobj save def
+mark
+8 pagesetup
+10 R f
+(- 8 -)2 166 1 2797 480 t
+2340 1371 1764 1371 Dl
+2340 1587 2340 1371 Dl
+1764 1587 2340 1587 Dl
+9 R f
+(in)2017 1451 w
+(place)1957 1547 w
+gsave
+newpath
+2340 1587 m
+/inpath true def
+ 0.8 setgray
+10 R f
+2340 1371 2340 1587 Dl
+2412 1371 2340 1371 Dl
+2412 1587 2412 1371 Dl
+2340 1587 2412 1587 Dl
+ gsave eofill grestore 0.8 setgray 
+grestore
+/inpath false def
+10 R f
+2340 1371 2340 1587 Dl
+3420 1371 2340 1371 Dl
+3420 1587 3420 1371 Dl
+2340 1587 3420 1587 Dl
+10 I f
+(a)2340 1334 w
+10 S f
+(+)2414 1334 w
+10 I f
+(k)2485 1334 w
+10 S f
+(=)2553 1334 w
+10 I f
+(pile)2624 1334 w
+10 R f
+([)2782 1334 w
+10 I f
+(c)2823 1334 w
+10 R f
+(])2875 1334 w
+2448 1587 2412 1587 Dl
+2522 1587 2486 1587 Dl
+2597 1587 2561 1587 Dl
+2672 1587 2636 1587 Dl
+2746 1587 2710 1587 Dl
+2821 1587 2785 1587 Dl
+2896 1587 2860 1587 Dl
+2971 1587 2935 1587 Dl
+3046 1587 3010 1587 Dl
+3121 1587 3085 1587 Dl
+3195 1587 3159 1587 Dl
+3270 1587 3234 1587 Dl
+3345 1587 3309 1587 Dl
+3420 1587 3384 1587 Dl
+3420 1551 3420 1587 Dl
+3420 1491 3420 1527 Dl
+3420 1431 3420 1467 Dl
+3420 1371 3420 1407 Dl
+3384 1371 3420 1371 Dl
+3309 1371 3345 1371 Dl
+3234 1371 3270 1371 Dl
+3159 1371 3195 1371 Dl
+3085 1371 3121 1371 Dl
+3010 1371 3046 1371 Dl
+2935 1371 2971 1371 Dl
+2860 1371 2896 1371 Dl
+2785 1371 2821 1371 Dl
+2710 1371 2746 1371 Dl
+2636 1371 2672 1371 Dl
+2561 1371 2597 1371 Dl
+2486 1371 2522 1371 Dl
+2412 1371 2448 1371 Dl
+2412 1407 2412 1371 Dl
+2412 1467 2412 1431 Dl
+2412 1527 2412 1491 Dl
+2412 1587 2412 1551 Dl
+9 R f
+(in)2881 1451 w
+(place)2821 1547 w
+10 R f
+3420 1371 3996 1371 Dl
+3420 1587 3420 1371 Dl
+3996 1587 3420 1587 Dl
+10 I f
+(a)3420 1334 w
+10 S f
+(+)3494 1334 w
+10 I f
+(k)3565 1334 w
+10 S f
+(+)3633 1334 w
+10 I f
+(count)3704 1334 w
+10 R f
+([)3934 1334 w
+10 I f
+(c)3975 1334 w
+10 R f
+(])4027 1334 w
+2664 975 2664 1155 Dl
+3096 975 2664 975 Dl
+3096 1155 3096 975 Dl
+2664 1155 3096 1155 Dl
+2556 1263 2880 1155 Dl
+2556 1263 2618 1224 Dl
+2556 1262 2630 1257 Dl
+10 I f
+(r)2664 938 w
+(r)2725 1085 w
+10 R f
+([)2772 1085 w
+10 I f
+(b)2813 1085 w
+10 R f
+(])2871 1085 w
+10 S f
+(=)2920 1085 w
+10 I f
+(c)2991 1085 w
+10 B f
+(Figure 4.4.)1 458 1 2404 1821 t
+10 R f
+(Last move.)1 444 1 2912 1821 t
+10 B f
+(Program 4.1.)1 557 1 1717 1977 t
+10 R f
+(In-place permutation to substitute in Program 3.1.)6 1993 1 2299 1977 t
+9 CW f
+(#define swap\(p, q, r\) r = p, p = q, q = r)12 2214 1 970 2123 t
+( t;)1 162(string r,)1 972 2 1402 2266 t
+( c;)1 162(int k,)1 972 2 1402 2376 t
+(for\(k = 0; k < n; \) {)7 1134 1 1402 2596 t
+( Figure 4.2 */)3 756( /*)1 1350(r = a[k];)2 486 3 1834 2706 t
+(for\(;;\) {)1 486 1 1834 2816 t
+( Figure 4.3 */)3 756( /*)1 918(c = r[b];)2 486 3 2266 2926 t
+(if\(--pile[c] <= a+k\))2 1080 1 2266 3036 t
+(break;)2698 3146 w
+(swap\(*pile[c], r, t\);)2 1134 1 2266 3256 t
+(})1834 3366 w
+( Figure 4.4 */)3 756( /*)1 1350(a[k] = r;)2 486 3 1834 3476 t
+(k += count[c];)2 756 1 1834 3586 t
+(count[c] = 0;)2 702 1 1834 3696 t
+(})1402 3806 w
+10 R f
+( 4.2, other-)2 442(When all piles but one are in place, the last pile must necessarily be in place, too. Program)17 3628 2 970 3962 t
+( 4.2 and Program B form the the basis of Pro-)10 1903( Program)1 402( fact.)1 207(wise a condensed Program 4.1, exploits this)6 1808 4 720 4082 t
+(gram C in the appendix.)4 963 1 720 4202 t
+10 B f
+(Program 4.2.)1 557 1 2068 4358 t
+10 R f
+(Improved in-place permutation.)2 1267 1 2675 4358 t
+9 CW f
+(cmax = /* index of last occupied pile */;)8 2214 1 1402 4504 t
+(n -= count[cmax];)2 918 1 1402 4614 t
+(count[cmax] = 0;)2 864 1 1402 4724 t
+(for\(ak = a; ak < a+n; ak += count[c], count[c] = 0\) {)12 2862 1 1402 4834 t
+(r = *ak;)2 432 1 1834 4944 t
+(while\(--pile[c = r[b]] > ak\))4 1512 1 1834 5054 t
+(swap\(*pile[c], r, t\);)2 1134 1 2266 5164 t
+(*ak = r;)2 432 1 1834 5274 t
+(})1402 5384 w
+10 B f
+( growth)1 330(4.1. Stack)1 439 2 720 5624 t
+10 R f
+( can bound the)3 624( We)1 200(In the programs so far, the stack potentially grows linearly with running time.)12 3246 3 970 5780 t
+( last\320a trick well known from)5 1289(growth logarithmically by arranging to split the largest pile at each level)11 3031 2 720 5900 t
+( inconvenient for list-)3 902( biggest-pile-last strategy is easy to install in array-based sorts, but)10 2781(quicksort. This)1 637 3 720 6020 t
+(based, where stack order matters and pile sizes are not automatically available.)11 3145 1 720 6140 t
+( the worst case, a split produces no 0-)8 1588( In)1 143(Even with a logarithmic bound, the stack can be sizable.)9 2339 3 970 6296 t
+( of the big piles is)5 724( One)1 218( the data.)2 367(piles, 253 little \(size 2\) piles, and two big piles of equal size for the rest of)16 3011 4 720 6416 t
+( For)1 194( split similarly.)2 614(immediately popped from the stack and)5 1604 3 720 6536 t
+10 I f
+(n)3162 6536 w
+10 S f
+(=)3252 6536 w
+10 R f
+( the worst-case stack has 2800)5 1236(1 , 000 , 000,)4 457 2 3347 6536 t
+( log)1 136( contrast, a stack of about 254)6 1279( By)1 181(entries \(33,000 bytes on a 32-bit machine\).)6 1798 4 720 6656 t
+7 R f
+(256)4125 6676 w
+10 I f
+(n)4246 6656 w
+10 R f
+(entries \(only 630)2 705 1 4335 6656 t
+(when)720 6776 w
+10 I f
+(n)970 6776 w
+10 S f
+(=)1060 6776 w
+10 R f
+( of a)2 197( Instead)1 348( for realistic data.)3 728( smaller stacks work)3 845( Still)1 227( suffices for uniform data.)4 1075(1 , 000 , 000\))4 465 7 1155 6776 t
+( allocate a short stack, say enough for two levels of full 256-way splitting, and call)15 3298(worst-case stack, we may)3 1022 2 720 6896 t
+(the routine recursively in the rare case of overflow.)8 2041 1 720 7016 t
+( program C, though they will almost surely)7 1848(For completeness, both stacking tactics are shown in)7 2222 2 970 7172 t
+( code, but only about one)5 1105( control adds one-third to the executable)6 1728( Stack)1 292(never be needed in practice.)4 1195 4 720 7292 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 8 8
+%%Page: 9 9
+/saveobj save def
+mark
+9 pagesetup
+10 R f
+(- 9 -)2 166 1 2797 480 t
+(percent to the running time.)4 1107 1 720 840 t
+10 B f
+( for tallying)2 500(4.2. Tricks)1 478 2 720 1080 t
+10 R f
+( not unfavorably distributed alpha-)4 1407(The pile-span heuristic for coping with empty piles presupposes a)9 2663 2 970 1236 t
+( is to keep a list of)6 793( One)1 226( empty piles may be found in the literature.)8 1803( ways to avoid looking at)5 1063(bet. Other)1 435 5 720 1356 t
+( the deal, sort)3 556( After)1 266( into an empty pile, record that pile in the list.)10 1887( time a string goes)4 753( Each)1 254(occupied piles.)1 604 6 720 1476 t
+( list is too long, ignore it and scan all the piles.)11 1908( the)1 152( If)1 121(the list of occupied piles by pile number.)7 1667 4 720 1596 t
+8 R f
+(7)4576 1564 w
+10 R f
+(A version)1 395 1 4645 1596 t
+( data, but slower on rea-)5 999(of Program C with this strategy instead of pile-span ran slightly faster on adverse)13 3321 2 720 1716 t
+(sonable data.)1 521 1 720 1836 t
+( the amount of)3 619( Then)1 268(Alternatively, an occupancy tree may be superimposed on the array of piles.)11 3183 3 970 1992 t
+( best of several tree-tallying)4 1138( The)1 211( diminishing occupancy.)2 992(work to locate occupied piles will diminish with)7 1979 4 720 2112 t
+( of strings and beats pile-span decisively)6 1668(schemes that we have tried is quite insensitive to the distribution)10 2652 2 720 2232 t
+(on adverse data, but normally runs about one-third to one-half slower then pile-span.)12 3383 1 720 2352 t
+( the identity and not the order of the piles matters in splitting, Paige and Tarjan pro-)16 3408(Noting that only)2 662 2 970 2508 t
+( piles in one combined pass after all splits are done.)10 2081(pose to scan)2 494 2 720 2628 t
+8 R f
+(8)3303 2596 w
+10 R f
+(Their method favors large radixes; it runs)6 1670 1 3370 2628 t
+( overhead\320from 4)2 805( Unfortunately,)1 658(faster with radix 64K than with radix 256.)7 1842 3 720 2748 t
+10 I f
+(n)4033 2748 w
+10 R f
+(to 8)1 177 1 4132 2748 t
+10 I f
+(n)4317 2748 w
+10 R f
+(extra words of)2 624 1 4416 2748 t
+(memory\320swamps the theoretical advantage.)3 1802 1 720 2868 t
+( little-endian)1 513( In)1 138( mitigates the problem of scanning empty piles.)7 1934(Little-endian \(last-letter first\) sorting)3 1485 4 970 3024 t
+( number of letters in the longest key, whereas in big-endian sorts)11 2662(sorts the number of splits is equal to the)8 1658 2 720 3144 t
+( Hopcroft, and Ullman show how)5 1347( Aho,)1 249(like ours the number of splits typically exceeds the number of keys.)11 2724 3 720 3264 t
+(to eliminate pile scanning at each deal of a little-endian sort by using a)13 2925 1 720 3384 t
+10 S f
+(Q)3678 3384 w
+10 R f
+( presort of all letters)4 832( \))1 41( size)1 188(\( total)1 219 4 3760 3384 t
+( keys to predict what piles will occur.)7 1540(from all)1 324 2 720 3504 t
+8 R f
+(9)2592 3472 w
+10 R f
+(A little-endian radix sort, however, must visit all letters of)9 2377 1 2663 3504 t
+(all keys instead of just the letters of distinguishing prefixes.)9 2382 1 720 3624 t
+( alternate algorithm for)3 971(In practice, exotic tricks for tallying are rendered moot by diverting to an)12 3099 2 970 3780 t
+(small)720 3900 w
+10 I f
+(n)965 3900 w
+10 R f
+( it is only when)4 629(. For)1 217 2 1015 3900 t
+10 I f
+(n)1889 3900 w
+10 R f
+( time to)2 310(is small that the time to scan piles is noticeable in comparison to the)13 2763 2 1967 3900 t
+( extremely cheap pile-span heuristic as a supplemental)7 2281( we still like the)4 695( Nevertheless,)1 604(deal and permute.)2 740 4 720 4020 t
+(strategy, for it can improve running times as much as 10% beyond diversion alone.)13 3315 1 720 4140 t
+10 B f
+(5. Performance)1 678 1 720 4380 t
+10 R f
+( the-)1 187( In)1 140(The merits of the several programs must be judged on preponderant, not decisive, evidence.)13 3743 3 970 4536 t
+( have the same worst-case asymptotic running time,)7 2104(ory, all)1 289 2 720 4656 t
+10 I f
+(O)3143 4656 w
+10 R f
+(\()3223 4656 w
+10 I f
+(S)3264 4656 w
+10 R f
+(\), where)1 331 1 3322 4656 t
+10 I f
+(S)3683 4656 w
+10 R f
+(is the size of the data measured)6 1277 1 3763 4656 t
+( relative behaviors vary with data, hard-)6 1635( The)1 212( practical terms, either.)3 938( is clearly dominant in)4 918( None)1 272(in bytes.)1 345 6 720 4776 t
+(ware, and compiler.)2 792 1 720 4896 t
+( sorting is most attrac-)4 926(In assessing performance, we shall consider only large data sets, where radix)11 3144 2 970 5052 t
+( tested quicksort program, which)4 1340( The)1 212( with quicksort.)2 639( how attractive is indicated by comparison)6 1740(tive. Just)1 389 5 720 5172 t
+(compares strings in line, chooses a random splitting element, and diverts to a simple sort for small arrays,)17 4320 1 720 5292 t
+( routine is not best possible, but probably)7 1769( The)1 222(was specialized from a model by Bentley and McIlroy.)8 2329 3 720 5412 t
+( recoiled from adapting their fastest model, which would)8 2314( \(We)1 226(within 1/3 of the ultimate speed for C code.)8 1780 3 720 5532 t
+(require 23 in-line string comparisons.\))4 1534 1 720 5652 t
+( for 15 tests of each of four routines on one computer for two)13 2468(Figure 5.1 shows the variation with size)6 1602 2 970 5808 t
+( strings of random bytes, exponentially)5 1575(kinds of random key: \(1\) strings of 8 random decimal digits and \(2\))12 2745 2 720 5928 t
+( is too narrow to reveal quicksort's)6 1416( range of this experiment)4 1010( The)1 208(distributed in length with mean 9.)5 1365 4 720 6048 t
+10 I f
+(n)4748 6048 w
+10 R f
+(log)4806 6048 w
+7 R f
+(2)4939 6008 w
+10 I f
+(n)4990 6048 w
+10 R f
+( this range the expected length of)6 1385( \(Across)1 370(departure from linearity, or to fully smooth quantizing effects.)8 2565 3 720 6168 t
+( Nevertheless)1 572( the byte data.\))3 614(comparisons varies by only one digit for the decimal data and half a byte for)14 3134 3 720 6288 t
+( is robust.)2 398( observation)1 495( This)1 232(the figure clearly shows that the radix sorts run markedly faster than quicksort.)12 3195 4 720 6408 t
+( the)1 151( As)1 165( drawn about the relative performance of the three radix sorts.)10 2508(No comparable generalization can be)4 1496 4 720 6528 t
+( experiments show similar variation with)5 1675( Other)1 285( kind of data.)3 551(figure shows, the rank order depends on the)7 1809 4 720 6648 t
+(hardware.)720 6768 w
+( 5.1 as a large varia-)5 843(The sensitivity of the pile-span heuristic to key distribution shows up in Figure)12 3227 2 970 6924 t
+( the other two routines, diversion almost completely damps the variation.)10 2930( In)1 134( for list-based sort.)3 752(tion of slope)2 504 4 720 7044 t
+( the extreme case of random keys strings contain-)8 2011( In)1 137( greater on sparse random data.)5 1266(The sensitivity is even)3 906 4 720 7164 t
+( took about 5 times as long to sort keys with distant byte)12 2292(ing just two byte values, the list-based Program A)8 2028 2 720 7284 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 9 9
+%%Page: 10 10
+/saveobj save def
+mark
+10 pagesetup
+10 R f
+(- 10 -)2 216 1 2772 480 t
+( Quicksort)1 450( C varied by a factor of 1.2 or less.)9 1437( hybrid Programs B and)4 975( The)1 210(values as with adjacent values.)4 1248 5 720 840 t
+(was unaffected.)1 625 1 720 960 t
+1595 1158 1595 4398 Dl
+4835 1158 1595 1158 Dl
+4835 4398 4835 1158 Dl
+1595 4398 4835 4398 Dl
+1681 4470 1681 4398 Dl
+(10000)1556 4580 w
+2505 4470 2505 4398 Dl
+(20000)2380 4580 w
+3595 4470 3595 4398 Dl
+(50000)3470 4580 w
+4420 4470 4420 4398 Dl
+(100000)4270 4580 w
+(Number of keys,)2 668 1 2844 4718 t
+10 I f
+(n)3537 4718 w
+1523 4199 1595 4199 Dl
+10 R f
+(0)1448 4219 w
+1523 3406 1595 3406 Dl
+(50)1398 3426 w
+1523 2613 1595 2613 Dl
+(100)1348 2633 w
+1523 1821 1595 1821 Dl
+(150)1348 1841 w
+(Time/)1044 2798 w
+10 I f
+(n)1283 2798 w
+10 S f
+(m)1010 2918 w
+10 R f
+(sec/key)1068 2918 w
+(LB)2707 3682 w
+1831 3741 1795 3743 Dl
+1903 3737 1867 3739 Dl
+1974 3734 1938 3736 Dl
+2046 3730 2010 3732 Dl
+2118 3727 2082 3729 Dl
+2190 3723 2154 3725 Dl
+2262 3719 2226 3721 Dl
+2334 3716 2298 3718 Dl
+2406 3712 2370 3714 Dl
+2478 3708 2442 3710 Dl
+2550 3704 2514 3706 Dl
+2622 3701 2586 3703 Dl
+2694 3697 2658 3699 Dl
+2766 3694 2730 3696 Dl
+2838 3690 2802 3692 Dl
+2910 3686 2874 3688 Dl
+2982 3683 2946 3685 Dl
+3054 3679 3018 3681 Dl
+3125 3676 3089 3678 Dl
+3197 3672 3161 3674 Dl
+3269 3668 3233 3670 Dl
+3341 3665 3305 3667 Dl
+3413 3661 3377 3663 Dl
+3485 3658 3449 3660 Dl
+3557 3654 3521 3656 Dl
+3629 3650 3593 3652 Dl
+3701 3646 3665 3648 Dl
+3773 3642 3737 3644 Dl
+3845 3639 3809 3641 Dl
+3917 3635 3881 3637 Dl
+3989 3632 3953 3634 Dl
+4061 3628 4025 3630 Dl
+4133 3624 4097 3626 Dl
+4205 3621 4169 3623 Dl
+4277 3617 4241 3619 Dl
+4349 3614 4313 3616 Dl
+4421 3610 4385 3612 Dl
+4493 3606 4457 3608 Dl
+4565 3603 4529 3605 Dl
+4637 3599 4601 3601 Dl
+(TA)2705 3336 w
+1831 3402 1795 3404 Dl
+1903 3398 1867 3400 Dl
+1974 3394 1938 3396 Dl
+2046 3390 2010 3392 Dl
+2118 3385 2082 3387 Dl
+2190 3381 2154 3383 Dl
+2262 3377 2226 3379 Dl
+2334 3373 2298 3375 Dl
+2406 3369 2370 3371 Dl
+2478 3364 2442 3366 Dl
+2550 3361 2514 3363 Dl
+2622 3357 2586 3359 Dl
+2694 3352 2658 3354 Dl
+2766 3348 2730 3350 Dl
+2838 3344 2802 3346 Dl
+2910 3340 2874 3342 Dl
+2982 3336 2946 3338 Dl
+3054 3331 3018 3333 Dl
+3125 3328 3089 3330 Dl
+3197 3323 3161 3325 Dl
+3269 3319 3233 3321 Dl
+3341 3316 3305 3318 Dl
+3413 3311 3377 3313 Dl
+3485 3307 3449 3309 Dl
+3557 3303 3521 3305 Dl
+3629 3299 3593 3301 Dl
+3701 3295 3665 3297 Dl
+3773 3290 3737 3292 Dl
+3845 3286 3809 3288 Dl
+3917 3282 3881 3284 Dl
+3989 3278 3953 3280 Dl
+4061 3274 4025 3276 Dl
+4133 3269 4097 3271 Dl
+4205 3266 4169 3268 Dl
+4277 3262 4241 3264 Dl
+4349 3257 4313 3259 Dl
+4421 3253 4385 3255 Dl
+4493 3249 4457 3251 Dl
+4565 3245 4529 3247 Dl
+4637 3241 4601 3243 Dl
+(AF)2707 3497 w
+1831 3568 1795 3570 Dl
+1903 3563 1867 3565 Dl
+1974 3559 1938 3561 Dl
+2046 3555 2010 3557 Dl
+2118 3550 2082 3552 Dl
+2190 3545 2154 3547 Dl
+2262 3541 2226 3543 Dl
+2334 3537 2298 3539 Dl
+2406 3532 2370 3534 Dl
+2478 3527 2442 3529 Dl
+2550 3523 2514 3525 Dl
+2622 3519 2586 3521 Dl
+2694 3514 2658 3516 Dl
+2766 3509 2730 3511 Dl
+2838 3505 2802 3507 Dl
+2910 3500 2874 3502 Dl
+2982 3496 2946 3498 Dl
+3054 3491 3018 3493 Dl
+3125 3487 3089 3489 Dl
+3197 3482 3161 3484 Dl
+3269 3478 3233 3480 Dl
+3341 3473 3305 3475 Dl
+3413 3469 3377 3471 Dl
+3485 3464 3449 3466 Dl
+3557 3460 3521 3462 Dl
+3629 3455 3593 3457 Dl
+3701 3450 3665 3452 Dl
+3773 3446 3737 3448 Dl
+3845 3442 3809 3444 Dl
+3917 3437 3881 3439 Dl
+3989 3432 3953 3434 Dl
+4061 3428 4025 3430 Dl
+4133 3424 4097 3426 Dl
+4205 3419 4169 3421 Dl
+4277 3414 4241 3416 Dl
+4349 3410 4313 3412 Dl
+4421 3406 4385 3408 Dl
+4493 3400 4457 3402 Dl
+4565 3396 4529 3398 Dl
+4637 3392 4601 3394 Dl
+(QS)2707 1954 w
+1829 2273 1795 2283 Dl
+1897 2251 1863 2261 Dl
+1966 2228 1932 2238 Dl
+2034 2206 2000 2216 Dl
+2102 2184 2068 2194 Dl
+2171 2161 2137 2171 Dl
+2239 2139 2205 2149 Dl
+2308 2117 2274 2127 Dl
+2377 2095 2343 2105 Dl
+2445 2073 2411 2083 Dl
+2513 2050 2479 2060 Dl
+2582 2028 2548 2038 Dl
+2650 2006 2616 2016 Dl
+2719 1983 2685 1993 Dl
+2787 1961 2753 1971 Dl
+2855 1939 2821 1949 Dl
+2925 1916 2891 1926 Dl
+2993 1894 2959 1904 Dl
+3061 1872 3027 1882 Dl
+3130 1850 3096 1860 Dl
+3198 1827 3164 1837 Dl
+3267 1805 3233 1815 Dl
+3335 1783 3301 1793 Dl
+3403 1760 3369 1770 Dl
+3472 1738 3438 1748 Dl
+3541 1716 3507 1726 Dl
+3609 1693 3575 1703 Dl
+3678 1671 3644 1681 Dl
+3746 1649 3712 1659 Dl
+3814 1626 3780 1636 Dl
+3883 1604 3849 1614 Dl
+3951 1582 3917 1592 Dl
+4020 1559 3986 1569 Dl
+4089 1537 4055 1547 Dl
+4157 1515 4123 1525 Dl
+4226 1492 4192 1502 Dl
+4294 1470 4260 1480 Dl
+4362 1448 4328 1458 Dl
+4431 1425 4397 1435 Dl
+4499 1403 4465 1413 Dl
+4568 1381 4534 1391 Dl
+4636 1358 4602 1368 Dl
+(LB)2924 3785 w
+4636 3608 1795 3934 Dl
+(TA)1729 3998 w
+4636 3876 1795 3930 Dl
+(AF)1731 3888 w
+4636 3872 1795 3899 Dl
+(QS)2707 3101 w
+4636 2817 1795 3267 Dl
+4466 1484 4420 1484 Dl
+4444 1484 4467 1484 Dl
+4444 1357 4444 1484 Dl
+4421 1356 4444 1356 Dl
+4466 1356 4420 1356 Dl
+4466 3654 4420 3654 Dl
+4444 3654 4467 3654 Dl
+4444 3606 4444 3654 Dl
+4421 3605 4444 3605 Dl
+4466 3605 4420 3605 Dl
+(QS quicksort)1 525 1 3359 2078 t
+(LB list-based \(Program A\))3 1068 1 3359 2190 t
+(TA two-array \(Program B\))3 1072 1 3359 2301 t
+(AF American-flag \(Program C\))3 1261 1 3359 2412 t
+(random bytes)1 541 1 3642 2522 t
+(random digits)1 553 1 3642 2633 t
+3595 2502 3359 2502 Dl
+3395 2613 3359 2613 Dl
+3462 2613 3426 2613 Dl
+3528 2613 3492 2613 Dl
+3595 2613 3559 2613 Dl
+10 B f
+(Figure 5.1.)1 459 1 970 4992 t
+10 R f
+(Least-squares fits to sorting time per key versus log)8 2072 1 1480 4992 t
+10 I f
+(n)3560 4992 w
+10 R f
+( Rep-)1 246( DEC VAX 8550.)3 722(for a)1 186 3 3636 4992 t
+(resentative)970 5112 w
+10 S f
+(\261)1427 5112 w
+10 R f
+(1)1490 5112 w
+10 S f
+(s)1548 5112 w
+10 R f
+(error bars are shown; other curves fit comparably.)7 1994 1 1633 5112 t
+( words of the)3 617( sorted the 73,000)3 806( We)1 218(Realistic sorting problems are usually far from random.)7 2429 4 970 5388 t
+( listed in Table 5.1.)4 788(Merriam-Webster Collegiate Dictionary, 7th edition, using the machines and compilers)9 3532 2 720 5508 t
+( and uncapitalized words.)3 1041(The word list consists mainly of two interleaved alphabetical lists, of capitalized)11 3279 2 720 5628 t
+( list concate-)2 522(We sorted, into strict ASCII order, three input configurations: \(1\) as is, \(2\) two copies of the)16 3798 2 720 5748 t
+( running times of programs A,)5 1235( The)1 210( mixes the data well.)4 844(nated, and \(3\) ordered by reversed spelling, which)7 2031 4 720 5868 t
+( sort won)2 384( American-flag)1 637( each other, with no clear winner.)6 1371(B, and C were usually within a factor of 1.2 of)10 1928 4 720 5988 t
+( roughly consonant)2 772(consistently on the MIPS, two-array sort on the Cray, and list-based on the Vax, a result)15 3548 2 720 6108 t
+( lost)1 173( It)1 114( list-based program was the most erratic.)6 1640( The)1 208( degree of pipelining on the several machines.)7 1856(with the)1 329 6 720 6228 t
+( in Figure)2 395( As)1 164( and decisively\320by a factor of 1.6\320on some Cray and MIPS runs.)11 2721(consistently on the MIPS,)3 1040 4 720 6348 t
+(5.1, quicksort fell far behind the radix sorts, usually by a factor of two or more.)15 3164 1 720 6468 t
+10 B f
+(6. Discussion)1 576 1 720 6708 t
+10 R f
+( years.)1 261(Our programs synopsize experiments that we have made jointly and severally over the past few)14 3809 2 970 6864 t
+( Program B for the Berkeley BSD library, based in part on a)12 2471(Bostic wrote a two-array radix sort similar to)7 1849 2 720 6984 t
+( McIlroy adapted that routine for use in the BSD version of the Posix stan-)14 3120( P.)1 141(routine by Dan Bernstein.)3 1059 3 720 7104 t
+(dard)720 7224 w
+8 R f
+(11)905 7192 w
+10 R f
+(sort utility.)1 458 1 1028 7224 t
+8 R f
+(12)1494 7192 w
+10 R f
+( for the two-array)3 751(P. McIlroy also conceived American flag sort as a replacement)9 2672 2 1617 7224 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 10 10
+%%Page: 11 11
+/saveobj save def
+mark
+11 pagesetup
+10 R f
+(- 11 -)2 216 1 2772 480 t
+10 B f
+(Table 5.1.)1 420 1 2015 876 t
+10 R f
+(Machines and compilers tested.)3 1259 1 2485 876 t
+( Author)1 433(Machine Compiler)1 1203 2 1721 1056 t
+10 S f
+(_ ______________________________________________)1 2317 1 1721 1076 t
+10 R f
+(DEC Vax 8850)2 616 1 1721 1196 t
+( and Hanson)2 499(lcc Fraser)1 777 2 2546 1316 t
+8 R f
+(10)3830 1284 w
+10 R f
+(gcc Gnu)1 700 1 2546 1436 t
+( with optimization)2 734( same,)1 473(gcc \261O)1 285 3 2546 1556 t
+(MIPS 6280)1 459 1 1721 1676 t
+(cc MIPS)1 762 1 2546 1796 t
+( with optimization)2 734( same,)1 473(cc \261O4)1 285 3 2546 1916 t
+( and Hanson)2 499(lcc Fraser)1 777 2 2546 2036 t
+(Sun Sparcstation)1 675 1 1721 2156 t
+( and Hanson)2 499(lcc Fraser)1 777 2 2546 2276 t
+( Gnu)1 415(gcc \261O)1 285 2 2546 2396 t
+(Cray XMP)1 436 1 1721 2516 t
+(scc Cray)1 722 1 2546 2636 t
+( a Posix utility around a list-based radix sort, and installed)10 2344( D. McIlroy wrote)3 729( Independently,)1 647(library routine.)1 600 4 720 2816 t
+( the Berkeley and the AT&T utilities typically run twice as fast over-)12 2769( Both)1 246( systems at AT&T.)3 764(it on research)2 541 4 720 2936 t
+(all as the venerable quicksort-based programs)5 1826 1 720 3056 t
+8 R f
+(13)2554 3024 w
+10 R f
+(that they replace.)2 684 1 2659 3056 t
+( for practical)2 537(Although radix sorts have unbeatable asymptotic performance, they present problems)9 3533 2 970 3212 t
+( We)1 201( keys.)1 246(implementation: \(1\) managing scattered piles of unpredictable size and \(2\) handling complex)11 3873 3 720 3332 t
+( utilities cope with complex keys by preconvert-)7 1935( Our)1 206(have shown that the piles can be handled comfortably.)8 2179 3 720 3452 t
+( it costs memory roughly proportional to the volume of keys, this strategy is)13 3038( Although)1 428(ing them into strings.)3 854 3 720 3572 t
+(simple and effective for sorting records after the fashion of the proposed Posix standard.)13 3526 1 720 3692 t
+( speed disparity is overcome by)5 1292( The)1 211( faster than pure array-based radix sorts.)6 1639(List-based radix sort is)3 928 4 970 3848 t
+( nat-)1 181( The)1 206( divert from radix sorting to simple comparison-based sorting for small arrays.)11 3146(hybrid routines that)2 787 4 720 3968 t
+( two-array)1 428( list-based and)2 607( Both)1 260(ural array-argument interface makes them attractive for library purposes.)8 3025 4 720 4088 t
+(sorts entail)1 450 1 720 4208 t
+10 S f
+(Q)1209 4208 w
+10 R f
+(\()1291 4208 w
+10 I f
+(n)1332 4208 w
+10 R f
+( overhead shrinks to)3 846( That)1 246(\) space overhead.)2 722 3 1390 4208 t
+10 S f
+(Q)3242 4208 w
+10 R f
+(\( log)1 169 1 3324 4208 t
+10 I f
+(n)3501 4208 w
+10 R f
+(\) in American flag sort, which, like)6 1481 1 3559 4208 t
+(quicksort, trades off stability for space efficiency.)6 1984 1 720 4328 t
+(We recommend American flag sort as an all-round algorithm for sorting strings.)11 3200 1 970 4484 t
+( we have profited,)3 738( And)1 228( programs.)1 433(We are grateful to Peter McCauley for critical examination of our)10 2671 4 970 4640 t
+(even to the wording of our title, from the advice and exemplary style of Jon Bentley.)15 3381 1 720 4760 t
+10 B f
+(References)720 5000 w
+10 R f
+( D. E.,)2 294([1] Knuth,)1 466 2 889 5216 t
+10 I f
+(The Art of Computer Programming)4 1489 1 1692 5216 t
+10 R f
+(, 3, Sorting and Searching, Addison Wesley)6 1859 1 3181 5216 t
+(\(1973\).)1080 5336 w
+( sorting method for digital comput-)5 1453( P. and Isbitz, H., ``Radix exchange\320an internal)7 2005([2] Hildebrandt,)1 693 3 889 5516 t
+(ers,'')1080 5636 w
+10 I f
+(JACM)1312 5636 w
+10 B f
+(6)1592 5636 w
+10 R f
+(, pp. 156-163 \(1959\).)3 849 1 1642 5636 t
+( J. L.,)2 225([3] Bentley,)1 527 2 889 5816 t
+10 I f
+(Programming Pearls)1 847 1 1666 5816 t
+10 R f
+( 10.6.)1 225( Solution)1 390(, Addison-Wesley \(1986\).)2 1037 3 2513 5816 t
+( E. W.,)2 280([4] Dijkstra,)1 538 2 889 5996 t
+10 I f
+(A Discipline of Programming)3 1186 1 1732 5996 t
+10 R f
+(, Prentice-Hall \(1976\).)2 898 1 2918 5996 t
+( C. A. R., ``Quicksort,'')4 957([5] Hoare,)1 459 2 889 6176 t
+10 I f
+(Computer Journal)1 736 1 2330 6176 t
+10 B f
+(5)3091 6176 w
+10 R f
+(, pp. 10-15 \(1962\).)3 749 1 3141 6176 t
+( J. L., ``The trouble with qsort,'')6 1298([6] Bentley,)1 527 2 889 6356 t
+10 I f
+(Unix Review)1 507 1 2739 6356 t
+10 B f
+(10)3271 6356 w
+10 R f
+(\(2\), pp. 85-93 \(Feb. 1992\).)4 1065 1 3371 6356 t
+( P. B.,)2 248([7] McCauley,)1 632 2 889 6536 t
+10 I f
+(Sorting method and apparatus)3 1220 1 1794 6536 t
+10 R f
+(, U. S. Patent 4,809,158 \(1989\).)5 1269 1 3014 6536 t
+( ``Three partition refinement algorithms,'')4 1736( R. and Tarjan, R. E.,)5 904([8] Paige,)1 438 3 889 6716 t
+10 I f
+(SIAM J. Comput.)2 712 1 4004 6716 t
+10 B f
+(16)4753 6716 w
+10 R f
+(, pp.)1 187 1 4853 6716 t
+(973-989 \(1987\).)1 649 1 1080 6836 t
+( and Ullman, J. D.,)4 771( A. V., Hopcroft, J. E.,)5 919([9] Aho,)1 388 3 889 7016 t
+10 I f
+(The Design and Analysis of Computer Algorithms)6 2019 1 2996 7016 t
+10 R f
+(,)5015 7016 w
+(Addison-Wesley \(1974\).)1 987 1 1080 7136 t
+( C. W. and Hanson, D. R., ``A retargetable compiler for ANSI C,'')12 2693([10] Fraser,)1 515 2 839 7316 t
+10 I f
+( Notices)1 328(ACM SIGPLAN)1 638 2 4074 7316 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 11 11
+%%Page: 12 12
+/saveobj save def
+mark
+12 pagesetup
+10 R f
+(- 12 -)2 216 1 2772 480 t
+10 B f
+(26)1080 840 w
+10 R f
+(\(10\), pp. 29-43 \(October 1991\).)4 1261 1 1180 840 t
+([11] IEEE,)1 482 1 839 1020 t
+10 I f
+(Draft Standard for Information Technology \261 Operating System Interface \(POSIX\) Part 2:)11 3688 1 1352 1020 t
+(Shell and Utilities)2 723 1 1080 1140 t
+10 R f
+(, Vol. P1003.2/D11 \(1991\).)3 1097 1 1803 1140 t
+( for publication.)2 641( \(\). submitted)2 586( P. M., ``Intermediate files and external radix sort,'')8 2073([12] McIlroy,)1 593 4 839 1320 t
+( sort routine,'')2 582( J. P., ``Theory and practice in the construction of a working)11 2445([13] Linderman,)1 704 3 839 1500 t
+10 I f
+(AT&T Bell)1 441 1 4599 1500 t
+(Laboratories Technical Journal)2 1278 1 1080 1620 t
+10 B f
+(63)2383 1620 w
+10 R f
+(, pp. 1827-1844 \(1984\).)3 949 1 2483 1620 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 12 12
+%%Page: 13 13
+/saveobj save def
+mark
+13 pagesetup
+10 R f
+(- 13 -)2 216 1 2772 480 t
+10 B f
+(Appendix)720 840 w
+(Program A.)1 504 1 2299 996 t
+10 R f
+(Stable list-based sort.)2 858 1 2853 996 t
+9 CW f
+(typedef struct list {)3 1134 1 970 1142 t
+( *next;)1 594(struct list)1 594 2 1402 1252 t
+( *data;)1 486(unsigned char)1 702 2 1402 1362 t
+(} list;)1 378 1 970 1472 t
+( *a\))1 216(list *rsort\(list)1 1026 2 970 1615 t
+({)970 1725 w
+( = a, sp\261>st = t, \(sp++\)\261>sb = b)8 1728( sp\261>sa)1 486(#define push\(a, t, b\))3 1134 3 970 1835 t
+( = \(\261\261sp\)\261>sa, t = sp\261>st, b = sp\261>sb)8 1998( a)1 270(#define pop\(a, t, b\))3 1080 3 970 1945 t
+( <= stack\))2 540( \(sp)1 378(#define stackempty\(\))1 1080 3 970 2055 t
+( == 0\))2 324( \(a\261>next)1 648(#define singleton\(a\))1 1080 3 970 2165 t
+( && a\261>data[b\2611]==0)2 1026( b>0)1 432(#define ended\(a, b\))2 1026 3 970 2275 t
+(struct { list *sa, *st; int sb; } stack[SIZE], *sp = stack;)11 3186 1 1402 2418 t
+( *tail[256];)1 648( *pile[256],)1 864(static list)1 594 3 1402 2528 t
+( *sequel = 0;)3 702(list *atail,)1 1242 2 1402 2638 t
+( c, cmin, nc = 0;)5 918(int b,)1 972 2 1402 2748 t
+(if\(a\))1402 2891 w
+(push\(a, a, 0\);)2 756 1 1834 3001 t
+(while\(!stackempty\(\)\) {)1 1188 1 1402 3144 t
+(pop\(a, atail, b\);)2 918 1 1834 3254 t
+(if\(singleton\(a\) || ended\(a, b\)\) { /* pile finished */)8 2862 1 1834 3364 t
+(atail\261>next = sequel;)2 1134 1 2266 3474 t
+(sequel = a;)2 594 1 2266 3584 t
+(continue;)2266 3694 w
+(})1834 3804 w
+( split */)2 486( /*)1 1350(cmin = 255;)2 594 3 1834 3947 t
+(for\( ; a; a = a\261>next\) {)6 1296 1 1834 4057 t
+(c = a\261>data[b];)2 810 1 2266 4167 t
+(if\(pile[c] == 0\) {)3 972 1 2266 4277 t
+(tail[c] = pile[c] = a;)4 1188 1 2698 4387 t
+(if\(c == 0\) continue;)3 1080 1 2698 4497 t
+(if\(c < cmin\) cmin = c;)5 1188 1 2698 4607 t
+(nc++;)2698 4717 w
+(} else)1 324 1 2266 4827 t
+(tail[c] = tail[c]\261>next = a;)4 1512 1 2698 4937 t
+(})1834 5047 w
+( stack the pieces */)4 1080( /*)1 1242(if\(pile[0]\) {)1 702 3 1834 5190 t
+(push\(pile[0], tail[0], b+1\);)2 1512 1 2266 5300 t
+(tail[0]\261>next = pile[0] = 0;)4 1512 1 2266 5410 t
+(})1834 5520 w
+(for\(c = cmin; nc > 0; c++\))6 1404 1 1834 5630 t
+(if\(pile[c]\) {)1 702 1 2266 5740 t
+(push\(pile[c], tail[c], b+1\);)2 1512 1 2698 5850 t
+(tail[c]\261>next = pile[c] = 0;)4 1512 1 2698 5960 t
+(nc\261\261;)2698 6070 w
+(})2266 6180 w
+(})1402 6290 w
+(return sequel;)1 756 1 1402 6433 t
+(})970 6543 w
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 13 13
+%%Page: 14 14
+/saveobj save def
+mark
+14 pagesetup
+10 R f
+(- 14 -)2 216 1 2772 480 t
+10 B f
+(Program B.)1 499 1 2283 840 t
+10 R f
+(Hybrid two-array sort.)2 895 1 2832 840 t
+9 CW f
+(typedef unsigned char *string;)3 1620 1 970 986 t
+(void simplesort\(string*, int, int\);)3 1890 1 970 1129 t
+(void rsort\(string *a, int n\))4 1512 1 970 1272 t
+({)970 1382 w
+( = a, sp\261>sn = n, \(sp++\)\261>si = i)8 1728( sp\261>sa)1 486(#define push\(a, n, i\))3 1134 3 970 1492 t
+( = \(\261\261sp\)\261>sa, n = sp\261>sn, i = sp\261>si)8 1998( a)1 270(#define pop\(a, n, i\))3 1080 3 970 1602 t
+( <= stack\))2 540( \(sp)1 378(#define stackempty\(\))1 1080 3 970 1712 t
+(struct { string *sa; int sn, si; } stack[SIZE], *sp = stack;)11 3240 1 1402 1855 t
+( *ai, *ak, *ta;)3 810(string *pile[256],)1 1458 2 1402 1965 t
+( count[256];)1 918(static int)1 540 2 1402 2075 t
+( c, cmin, *cp, nc = 0;)6 1188(int b,)1 972 2 1402 2185 t
+(ta = malloc\(n*sizeof\(string\)\);)2 1620 1 1402 2328 t
+(push\(a, n, 0\);)2 756 1 1402 2471 t
+(while\(!stackempty\(\)\) {)1 1188 1 1402 2581 t
+(pop\(a, n, b\);)2 702 1 1834 2691 t
+( divert */)2 540( /*)1 1026(if\(n < THRESHOLD\) {)3 1026 3 1834 2801 t
+(simplesort\(a, n, b\);)2 1080 1 2266 2911 t
+(continue;)2266 3021 w
+(})1834 3131 w
+( tally */)2 486( /*)1 1458(cmin = 255;)2 594 3 1834 3274 t
+(for\(ak = a+n; \261\261ak >= a; \) {)7 1512 1 1834 3384 t
+(c = \(*ak\)[b];)2 702 1 2266 3494 t
+(if\(++count[c] == 1 && c > 0\) {)7 1620 1 2266 3604 t
+(if\(c < cmin\) cmin = c;)5 1188 1 2698 3714 t
+(nc++;)2698 3824 w
+(})2266 3934 w
+(})1834 4044 w
+( find places */)3 810( /*)1 540(pile[0] = ak = a + count[0];)6 1512 3 1834 4187 t
+(count[0] = 0;)2 702 1 1834 4297 t
+(for\(cp = count+cmin; nc > 0; cp++, nc\261\261\) {)8 2268 1 1834 4407 t
+(while\(*cp == 0\) cp++;)3 1134 1 2266 4517 t
+(if\(*cp > 1\))2 594 1 2266 4627 t
+(push\(ak, *cp, b+1\);)2 1026 1 2698 4737 t
+(pile[cp\261count] = ak += *cp;)4 1458 1 2266 4847 t
+(*cp = 0;)2 432 1 2266 4957 t
+(})1834 5067 w
+(for\(ak = ta+n, ai = a+n; ak > ta; \) /* move to temp */)14 2916 1 1834 5210 t
+(*\261\261ak = *\261\261ai;)2 756 1 2266 5320 t
+( move home */)3 702( /*)1 594(for\(ak = ta+n; ak\261\261 > ta; \))6 1458 3 1834 5463 t
+(*\261\261pile[\(*ak\)[b]] = *ak;)2 1296 1 2266 5573 t
+(})1402 5683 w
+(free\(ta\);)1402 5793 w
+(})970 5903 w
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 14 14
+%%Page: 15 15
+/saveobj save def
+mark
+15 pagesetup
+10 R f
+(- 15 -)2 216 1 2772 480 t
+10 B f
+(Program C.)1 504 1 1479 840 t
+10 R f
+(Hybrid American flag sort; optional stack control in fine print.)9 2497 1 2033 840 t
+9 CW f
+(enum { SIZE = 510, THRESHOLD = 16 };)8 1944 1 970 986 t
+(typedef unsigned char *string;)3 1620 1 970 1096 t
+(typedef struct { string *sa; int sn, si; } stack_t;)9 2754 1 970 1206 t
+(void simplesort\(string*, int, int\);)3 1890 1 970 1316 t
+7 CW f
+(static)970 1459 w
+9 CW f
+(void rsort)1 540 1 1276 1459 t
+7 CW f
+(a)1816 1459 w
+9 CW f
+(\(string *a, int n)3 918 1 1858 1459 t
+7 CW f
+(,int b)1 252 1 2830 1459 t
+9 CW f
+(\))3082 1459 w
+({)970 1569 w
+( = a, sp\261>sn = n, \(sp++\)\261>si = i)8 1728( sp\261>sa)1 486(#define push\(a, n, i\))3 1134 3 970 1679 t
+( = \(\261\261sp\)\261>sa, n = sp\261>sn, i = sp\261>si)8 1998( a)1 270(#define pop\(a, n, i\))3 1080 3 970 1789 t
+( <= stack\))2 540( \(sp)1 378(#define stackempty\(\))1 1080 3 970 1899 t
+( = p, p = q, q = r)8 972( r)1 216(#define swap\(p, q, r\))3 1134 3 970 2009 t
+( *sp = stack)3 648(stack_t stack[SIZE],)1 1512 2 1402 2119 t
+7 CW f
+(, stmp, *oldsp, *bigsp)3 924 1 3562 2119 t
+9 CW f
+(;)4486 2119 w
+( *ak, *an, r, t;)4 864(string *pile[256],)1 1458 2 1402 2229 t
+( cmin, nc;)2 540( count[256],)1 918(static int)1 540 3 1402 2339 t
+( c, cmax)2 432(int *cp,)1 1080 2 1402 2449 t
+7 CW f
+(/*)2914 2449 w
+9 CW f
+(, b = 0)3 378 1 2998 2449 t
+7 CW f
+(*/)3376 2449 w
+9 CW f
+(;)3460 2449 w
+(push\(a, n, b\);)2 756 1 1402 2592 t
+(while\(!stackempty\(\)\) {)1 1188 1 1402 2735 t
+(pop\(a, n, b\);)2 702 1 1834 2845 t
+( divert */)2 540( /*)1 810(if\(n < THRESHOLD\) {)3 1026 3 1834 2955 t
+(simplesort\(a, n, b\);)2 1080 1 2266 3065 t
+(continue;)2266 3175 w
+(})1834 3285 w
+(an = a + n;)4 594 1 1834 3395 t
+7 CW f
+( untallied? */)2 588( /*)1 1266(if\(nc == 0\) {)3 546 3 1834 3505 t
+9 CW f
+( tally */)2 486( /*)1 810(cmin = 255;)2 594 3 2266 3615 t
+(for\(ak = a; ak < an; \) {)7 1296 1 2266 3725 t
+(c = \(*ak++\)[b];)2 810 1 2698 3835 t
+(if\(++count[c] == 1 && c > 0\) {)7 1620 1 2698 3945 t
+(if\(c < cmin\) cmin = c;)5 1188 1 3130 4055 t
+(nc++;)3130 4165 w
+(})2698 4275 w
+(})2266 4385 w
+7 CW f
+( stack overflow */)3 756( /*)1 372(if\(sp+nc > stack+SIZE\) {)3 1008 3 2266 4475 t
+(rsorta\(a, n, b\);)2 672 1 2698 4565 t
+(continue;)2698 4655 w
+(})2266 4745 w
+(})1834 4835 w
+( logarithmic stack */)3 882( /*)1 720(oldsp = bigsp = sp, c = 2;)7 1092 3 1834 4925 t
+9 CW f
+(pile[0] = ak = a+count[cmax=0]; /* find places */)8 2646 1 1834 5035 t
+(for\(cp = count+cmin; nc > 0; cp++, nc\261\261\) {)8 2268 1 1834 5145 t
+(while\(*cp == 0\) cp++;)3 1134 1 2266 5255 t
+(if\(*cp > 1\))2 594 1 2266 5365 t
+7 CW f
+({)2914 5365 w
+(if\(*cp > c\) c = *cp, bigsp = sp)8 1302 1 2698 5455 t
+9 CW f
+(;)4000 5455 w
+(push\(ak, *cp, b+1\);)2 1026 1 2698 5565 t
+7 CW f
+(})2266 5655 w
+9 CW f
+(pile[cmax = cp\261count] = ak += *cp;)6 1836 1 2266 5765 t
+(})1834 5875 w
+7 CW f
+(swap\(*oldsp, *bigsp, stmp\);)2 1134 1 1834 5965 t
+9 CW f
+( permute home */)3 864( /*)1 864(an \261= count[cmax];)2 972 3 1834 6075 t
+(count[cmax] = 0;)2 864 1 1834 6185 t
+(for\(ak = a; ak < an; ak += count[c], count[c] = 0\) {)12 2808 1 1834 6295 t
+(r = *ak;)2 432 1 2266 6405 t
+(while\(\261\261pile[c = r[b]] > ak\))4 1512 1 2266 6515 t
+(swap\(*pile[c], r, t\);)2 1134 1 2698 6625 t
+(*ak = r;)2 432 1 2266 6735 t
+( here nc = count[...] = 0 */)7 1512(} /*)1 972 2 1834 6845 t
+(})1402 6955 w
+(})970 7065 w
+7 CW f
+(void rsort\(string *a, int n\) { rsorta\(a, n, 0\); })9 2058 1 970 7182 t
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 15 15
+%%Trailer
+done
+%%Pages: 15
+%%DocumentFonts: Courier Times-Bold Times-Italic Times-Roman Times-Roman Symbol

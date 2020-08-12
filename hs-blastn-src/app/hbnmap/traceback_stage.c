@@ -1,6 +1,7 @@
 #include "traceback_stage.h"
 
 #include "../../ncbi_blast/setup/blast_encoding.h"
+#include "../../ncbi_blast/setup/hsp2string.h"
 
 /** TRUE if c is between a and b; f between d and e.  Determines if the
  * coordinates are already in an HSP that has been evaluated. 
@@ -271,7 +272,11 @@ add_align_string(BlastHSP* hsp, const u8* query, const u8* subject, kstring_t* a
         int num = hsp->gap_info->num[i];
         if (type == eGapAlignSub || type == eGapAlignIns) {
             for (int p = 0; p < num; ++p, ++q, ++qi) {
+                hbn_assert(qi < hsp->hbn_query.seq_size);
                 u8 c = *q;
+                hbn_assert(c >= 0 && c < BLASTNA_SIZE, 
+                    "i = %d, nop = %d, p = %d, num = %d, c = %d, qi = %d, qsize = %d, qid = %d",
+                    i, hsp->gap_info->size, p, num, c, qi, hsp->hbn_query.seq_size, hsp->hbn_query.oid);
                 int dc = BLASTNA_TO_IUPACNA[c];
                 kputc(dc, aligned_string);
             }
@@ -400,7 +405,8 @@ compute_traceback_from_hsplist(EBlastProgramType program_number,
         if (!hsp) continue;
         const u8* query = query_blk->sequence_nomask + query_info->contexts[hsp->context].query_offset;
         const int query_length = query_info->contexts[hsp->context].query_length;
-        delete_hsp = Blast_HSPReevaluateWithAmbiguitiesGapped(hsp, query, query_length, subject, subject_length, hit_params, score_params, sbp);
+        delete_hsp = Blast_HSPReevaluateWithAmbiguitiesGapped(hsp, query, query_length, 
+                        subject, subject_length, hit_params, score_params, sbp);
         if (!delete_hsp) delete_hsp = Blast_HSPTestIdentityAndLength(program_number, hsp, query, subject, score_options, hit_options);
         if (delete_hsp) hsp_array[index] = Blast_HSPFree(hsp);
     }

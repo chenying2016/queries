@@ -554,7 +554,6 @@ s_UpdateReevaluatedHSP(BlastHSP* hsp, Boolean gapped,
     Boolean delete_hsp = TRUE;
 
     hsp->score = score;
-
     if (hsp->score >= cutoff_score) {
         /* Update all HSP offsets. */
         hsp->query.offset = best_q_start - query_start;

@@ -1,0 +1,9 @@
+This is a standalone version of the high-speed templated spreadsort library with the necessary Boost libraries included.  Some of the documentation graphics links aren't available, but this provides a simple way to use Spreadsort without bringing in all of Boost, and is formatted in a fashion that the latest version of the proposed Boost Spreadsort library can be copied in easily as updates occur.
+
+To just see how Spreadsort performs vs. std::sort on the provided tests with random data, run the tune.pl perl script:
+On UNIX/Linux/Macintosh systems: perl tune.pl -small
+On Windows systems: perl tune.pl -windows -small
+The -small option should run in a few minutes.  The default option is used for more precise performance comparisons and takes hours to run.
+These scripts require both perl and g++, which are free downloads.
+
+Written by Steven Ross.  Please address any questions to spreadsort@gmail.com.  See index.html for further information about the library.

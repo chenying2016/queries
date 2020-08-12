@@ -1757,22 +1757,22 @@ Int2 BLAST_ValidateOptions(EBlastProgramType program_number,
 
    if ((status = BlastExtensionOptionsValidate(program_number, ext_options,
                                                blast_msg)) != 0)
-       return status;
+       { fprintf(stderr, "[%d] validate fail\n", __LINE__); return status; }
    if ((status = BlastScoringOptionsValidate(program_number, score_options,
                                                blast_msg)) != 0)
-       return status;
+       { fprintf(stderr, "[%d] validate fail\n", __LINE__); return status; }
    if ((status = LookupTableOptionsValidate(program_number, 
                     lookup_options, blast_msg)) != 0)   
-       return status;
+       { fprintf(stderr, "[%d] validate fail\n", __LINE__); return status; }
    if ((status = BlastInitialWordOptionsValidate(program_number, 
                     word_options, blast_msg)) != 0)   
-       return status;
+       { fprintf(stderr, "[%d] validate fail\n", __LINE__); return status; }
    if ((status = BlastHitSavingOptionsValidate(program_number, hit_options,
                                                blast_msg)) != 0)
-       return status;
+       { fprintf(stderr, "[%d] validate fail\n", __LINE__); return status; }
    if ((status = s_BlastExtensionScoringOptionsValidate(program_number, ext_options,
                                                score_options, blast_msg)) != 0)
-       return status;
+       { fprintf(stderr, "[%d] validate fail\n", __LINE__); return status; }
 
    /* Word sizes larger than 5 are not suported for IDENTITY scoring matrix.
     Identity matrix is only supported for blastp and tblastn. */

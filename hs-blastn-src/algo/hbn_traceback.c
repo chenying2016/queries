@@ -3,7 +3,6 @@
 #include <math.h>
 
 #include "hbn_traceback_aux.h"
-#include "mem_finder.h"
 
 static const int kMatLen = 8;
 //static const int kMaxEdlibOverHang = 3000;

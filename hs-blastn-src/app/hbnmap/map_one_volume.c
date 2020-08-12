@@ -2,7 +2,7 @@
 
 #include "../../algo/chain_dp.h"
 #include "../../algo/hbn_traceback.h"
-#include "../../algo/mem_finder.h"
+#include "../../algo/init_hit_finder.h"
 #include "../../algo/word_finder.h"
 
 #include "../../corelib/gapped_candidate.h"

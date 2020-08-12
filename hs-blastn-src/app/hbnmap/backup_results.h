@@ -13,6 +13,12 @@ extern "C" {
 #endif
 
 void
+dump_m4_hits(const text_t* query_vol,
+    const text_t* subject_vol,
+    HbnHSPResults* results,
+    const HbnProgramOptions* opts);
+
+void
 dump_one_result_set(const CSeqDB* queries,
     const CSeqDB* db,
     HbnHSPResults* results, 

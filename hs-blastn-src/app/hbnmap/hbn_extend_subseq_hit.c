@@ -7,16 +7,13 @@ HbnSubseqHitExtnData*
 HbnSubseqHitExtnDataNew(const HbnProgramOptions* opts)
 {
     HbnSubseqHitExtnData* data = (HbnSubseqHitExtnData*)calloc(1, sizeof(HbnSubseqHitExtnData));
-        const int memsc_kmer_size = opts->memsc_kmer_size;
-        const int memsc_mem_size = opts->memsc_mem_size;
-        hbn_assert(memsc_kmer_size <= memsc_mem_size);
-        const int memsc_window_size = opts->memsc_kmer_window;
-        const int memsc_score = opts->memsc_score;
-        data->mem_data = MaximalExactMatchWorkDataNew(memsc_kmer_size, 
-                            memsc_window_size, 
-                            memsc_mem_size, 
+    const int memsc_kmer_size = opts->memsc_kmer_size;
+    const int memsc_window_size = opts->memsc_kmer_window;
+    const int memsc_score = opts->memsc_score;
+    data->hit_finder = InitHitFindDataNew(memsc_kmer_size,
+                            memsc_window_size,
                             memsc_score);
-        data->traceback_data = HbnTracebackDataNew();
+    data->traceback_data = HbnTracebackDataNew();
     kv_init(data->chain_seed_list);
     kv_init(data->fwd_sbjct_subseq_list);
     kv_init(data->rev_sbjct_subseq_list);
@@ -27,7 +24,7 @@ HbnSubseqHitExtnDataNew(const HbnProgramOptions* opts)
 HbnSubseqHitExtnData*
 HbnSubseqHitExtnDataFree(HbnSubseqHitExtnData* data)
 {
-    if (data->mem_data) MaximalExactMatchWorkDataFree(data->mem_data);
+    if (data->hit_finder) InitHitFindDataFree(data->hit_finder);
     if (data->traceback_data) HbnTracebackDataFree(data->traceback_data);
     kv_destroy(data->chain_seed_list);
     kv_destroy(data->fwd_sbjct_subseq_list);
@@ -35,51 +32,6 @@ HbnSubseqHitExtnDataFree(HbnSubseqHitExtnData* data)
     kv_destroy(data->sbjct_subseq_list);
     free(data);
     return NULL;
-}
-
-static BOOL
-subseq_is_contained(const BlastHSP* hsp_array,
-    const int hsp_count,
-    HbnSubseqHit* hit,
-    const int qsize)
-{
-    const int E = 100;
-    int qoff = hit->qoff;
-    int soff = hit->soff + hit->sfrom;
-    for (int i = 0; i < hsp_count; ++i) {
-        const BlastHSP* hsp = hsp_array + i;
-        if (hsp->hbn_query.strand != hit->qdir) continue;
-        int r = (qoff + E >= hsp->hbn_query.offset)
-                &&
-                (qoff <= hsp->hbn_query.end + E)
-                &&
-                (soff + E >= hsp->hbn_subject.offset)
-                &&
-                (soff <= hsp->hbn_subject.end + E);
-        if (r) return TRUE;
-    }
-
-    int hit_qoff = hit->qoff;
-    if (hit->qdir == REV) hit_qoff = qsize - 1 - hit->qoff;
-    int hit_soff = hit->soff + hit->sfrom;
-    for (int i = -1; i < hsp_count; ++i) {
-        const BlastHSP* hsp = (hsp_array + i);
-        if (hsp->hsp_info.ddf_score == -1) continue;
-        int hsp_qbeg = hsp->hbn_query.offset;
-        int hsp_qend = hsp->hbn_query.end;
-        if (hsp->hbn_query.strand == REV) {
-            hsp_qbeg = qsize - hsp->hbn_query.end;
-            hsp_qend = qsize - hsp->hbn_query.offset;
-        }
-        int hsp_sbeg = hsp->hbn_subject.offset;
-        int hsp_send = hsp->hbn_subject.end;
-        int r = (hit->qoff >= hsp_qbeg && hit->qoff <= hsp_qend)
-                ||
-                (hit_soff >= hsp_sbeg && hit_soff <= hsp_send);
-        if (!r) continue;
-        if (hit->score < hsp->hsp_info.ddf_score * 0.4) return TRUE;
-    }
-    return FALSE;
 }
 
 static BOOL
@@ -118,27 +70,6 @@ chain_seed_list_is_contained(const BlastHSP* hsp_array,
         if (r) return TRUE;
     }
 
-    return FALSE;
-}
-
-static BOOL
-hsp_is_contained(const BlastHSP* hsp_array,
-    const int hsp_count,
-    BlastHSP* newhsp)
-{
-    const int E = 200;
-    for (int i = 0; i < hsp_count; ++i) {
-        const BlastHSP* hsp = hsp_array + i;
-        if (hsp->hbn_query.strand != newhsp->hbn_query.strand) continue;
-        int r = (newhsp->hbn_query.offset + E >= hsp->hbn_query.offset)
-                &&
-                (newhsp->hbn_query.end <= hsp->hbn_query.end + E)
-                &&
-                (newhsp->hbn_subject.offset + E >= hsp->hbn_subject.offset)
-                &&
-                (newhsp->hbn_subject.end <= hsp->hbn_subject.end + E);
-        if (r) return TRUE;
-    }
     return FALSE;
 }
 
@@ -243,7 +174,9 @@ static void s_ReduceGaps(GapEditScript* esp, const Uint1 *q, const Uint1 *s,
            if(esp->num[i] >= 12) {
                nm1 = 1;
                if (i > 0) {
-                   while (q1-nm1>=q && (*(q1-nm1) == *(s1-nm1))) ++nm1;
+                   while (q1-nm1>=q && (s1-nm1>=s) && (*(q1-nm1) == *(s1-nm1))) {
+                       ++nm1;
+                   }
                }
                q1 += esp->num[i];
                s1 += esp->num[i];
@@ -509,7 +442,7 @@ set_blasthsp(HbnTracebackData* data,
     hbn_assert(op_idx == num_op);
 }
 
-void
+static void
 extract_subject_subsequence_without_ambig_res(const text_t* db, const int sid, const size_t from, const size_t to, vec_u8* subject)
 {
     kv_clear(*subject);
@@ -545,32 +478,32 @@ hbn_extend_subject_subseq_hit_list(HbnSubseqHitExtnData* data,
     hsp_list->query_index = query_id;
 
     sort_subseq_hit_score_gt(hit_count, hit_array);
-    MaximalExactMatchWorkData* mem_data = data->mem_data;
+    InitHitFindData* hit_finder = data->hit_finder;
     vec_chain_seed* chain_seed_list = &data->chain_seed_list;
     BlastHSP hsp_array[opts->max_hsps_per_subject];
     int hsp_count = 0;
     for (int i = 0; i < hit_count && i < opts->max_hsps_per_subject + 1 && hsp_count < opts->max_hsps_per_subject; ++i) {
         HbnSubseqHit* hit = hit_array + i;
+        //dump_subseq_hit(fprintf, stderr, *hit);
         extract_subject_subsequence_without_ambig_res(db, hit->sid, hit->sfrom, hit->sto, subject_v);
         const u8* subject = kv_data(*subject_v);
         const int subject_length = kv_size(*subject_v);
         int strand = hit->qdir;
-        if (!MaximalExactMatchWorkData_FindCandidates(mem_data, subject, subject_length, strand)) {
+        InitHitFindData_AddQuery(hit_finder,
+                hit->sid, NULL,
+                subject, NULL, subject_length);
+        InitHitFindData_FindHits(hit_finder, strand);
+        if (kv_empty(hit_finder->hit_list)) {
             continue;
         }
         const int max_k = 5;
-        for (size_t k = 0; k < kv_size(mem_data->init_hit_list) && k < max_k; ++k) {
-            HbnInitHit* init_hit = kv_data(mem_data->init_hit_list) + k;
-            ChainSeed* chain_seed_array = (ChainSeed*)init_hit->chain_seed_array;
-            int chain_seed_count = init_hit->chain_seed_count;
-            kv_clear(*chain_seed_list);            
-            for (int x = 0; x < chain_seed_count; ++x) {
-                ChainSeed seed;
-                seed.qoff = chain_seed_array[x].soff;
-                seed.soff = chain_seed_array[x].qoff;
-                seed.length = chain_seed_array[x].length;
-                kv_push(ChainSeed, *chain_seed_list, seed);
-            }
+        for (size_t k = 0; k < kv_size(hit_finder->hit_list) && k < max_k; ++k) {
+            HbnInitHit* init_hit = kv_data(hit_finder->hit_list) + k;
+            InitHitFindData_SetupMapAlignInfoFromHit(hit_finder,
+                init_hit, chain_seed_list);
+            ChainSeed* chain_seed_array = kv_data(*chain_seed_list);
+            int chain_seed_count = kv_size(*chain_seed_list);
+            if (chain_seed_count == 0) continue;
 
             if (chain_seed_list_is_contained(hsp_array, 
                     hsp_count, 
@@ -579,8 +512,8 @@ hbn_extend_subject_subseq_hit_list(HbnSubseqHitExtnData* data,
                     hit->sid,
                     hit->sfrom,
                     init_hit->score,
-                    kv_data(*chain_seed_list),
-                    kv_size(*chain_seed_list))) {
+                    chain_seed_array,
+                    chain_seed_count)) {
                     continue;
             }
             const u8* query = (init_hit->sdir == FWD) ? fwd_query : rev_query;
@@ -589,8 +522,8 @@ hbn_extend_subject_subseq_hit_list(HbnSubseqHitExtnData* data,
                     query_length,
                     subject,
                     subject_length,
-                    kv_data(*chain_seed_list),
-                    kv_size(*chain_seed_list),
+                    chain_seed_array,
+                    chain_seed_count,
                     opts->query_cov_hsp_res,
                     opts->perc_identity,
                     !opts->skip_overhang)) {
@@ -608,6 +541,7 @@ hbn_extend_subject_subseq_hit_list(HbnSubseqHitExtnData* data,
                 query + data->traceback_data->qend,
                 subject + data->traceback_data->send);
             ++hsp_count;
+            //dump_blasthsp(fprintf, stderr, *hsp);
             if (hsp_count == opts->max_hsps_per_subject) break;
         }
     }
@@ -641,11 +575,7 @@ hbn_extend_query_subseq_hit_list(HbnSubseqHit* subseq_hit_array,
     BlastHitList* hit_list,
     HbnHSPResults* results)
 {
-    MaximalExactMatchWorkData_Init(data->mem_data, 
-        fwd_query,
-        rev_query,
-        query_length);
-    data->mem_data->ref_name = query_name;
+    InitHitFindData_Init(data->hit_finder, query_id, query_name, fwd_query, rev_query, query_length);
 
     BlastHSPList hsplist_array[opts->hitlist_size];
     int hsplist_count = 0;

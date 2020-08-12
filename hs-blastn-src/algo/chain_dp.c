@@ -2,12 +2,26 @@
 
 #include "../corelib/ksort.h"
 
-#define chain_seed_soff_lt(a, b) ( \
-    ((a).soff < (b).soff) \
-    || \
-    ((a).soff == (b).soff && (a).qoff < (b).qoff) \
-)
-KSORT_INIT(chain_seed_soff_lt, ChainSeed, chain_seed_soff_lt);
+void
+validate_mem(HBN_LOG_PARAMS_GENERIC,
+    const u8* read, 
+    const u8* subject,
+    const ChainSeed* cdpsa,
+    const int cdpsc)
+{
+    //return;
+    //HBN_LOG("validating mems from [%s, %s, %d]", HBN_LOG_ARGS_GENERIC);
+    for (int i = 0; i < cdpsc; ++i) {
+        ChainSeed s = cdpsa[i];
+        //fprintf(stderr, "\tvalidating %d\t%d\t%d\t%d\t%d\n", i, s.qoff, s.soff, s.length, s.sdir);
+        int qi = s.qoff;
+        int si = s.soff;
+        for (int k = 0; k < s.length; ++k, ++qi, ++si) {
+            hbn_assert(read[qi] == subject[si], "[%s, %s, %d] at (%d, %d, %d): qi = %d, si = %d", 
+            HBN_LOG_ARGS_GENERIC, s.qoff, s.soff, s.length, qi, si);
+        }
+    }
+}
 
 ChainWorkData*
 ChainWorkDataNew(int min_seed_cnt, int min_can_score)
@@ -24,11 +38,19 @@ ChainWorkDataNew(int min_seed_cnt, int min_can_score)
 
     data->max_dist_qry = 5000;
     data->max_dist_ref = 5000;
-    data->max_band_width = 500;
+    data->max_band_width = 1500;
+
+#if 1
     data->max_join_long = 20000;
     data->max_join_short = 2000;
     data->min_join_flank_sc = 1000;
     data->min_join_flank_ratio = 0.5;
+#else 
+    data->max_join_long = 1000;
+    data->max_join_short = 200;
+    data->min_join_flank_sc = 200;
+    data->min_join_flank_ratio = 0.5;
+#endif
 
     data->max_skip = 25;
     data->min_cnt = min_seed_cnt;
@@ -105,15 +127,15 @@ scoring_chain_seeds(ChainWorkData* data,
         int max_j = -1;
         int cov = seeds[i].length;
         int max_f = cov, n_skip = 0, min_d;
-        while (st < i && ri > seeds[st].soff + max_dist_ref) ++st;
+        while (st < i && ri > seeds[st].soff + seeds[st].length + max_dist_ref) ++st;
         for (int j = i - 1; j >= st; --j) {
             //HBN_LOG("comparing");
-            //fprintf(stderr, "[%d, %d, %d] v.s. [%d, %d, %d]\n",
-            //    i, seeds[i].qoff, seeds[i].soff, j, seeds[j].qoff, seeds[j].sdir);
+            //fprintf(stderr, "[%d, %d, %d, %d] v.s. [%d, %d, %d, %d]\n",
+            //    i, seeds[i].qoff, seeds[i].soff, seeds[i].length, j, seeds[j].qoff, seeds[j].soff, seeds[j].length);
             if (is_maximal_exact_match) {
-                if (seeds[j].qoff + seeds[j].length >= qi || seeds[j].soff + seeds[j].length >= ri) continue;
+                if (seeds[j].qoff + seeds[j].length > qi || seeds[j].soff + seeds[j].length > ri) continue;
             } else {
-                if (seeds[j].qoff >= qi || seeds[j].soff >= ri) continue;
+                if (seeds[j].qoff > qi || seeds[j].soff > ri) continue;
             }
             idx dr = ri - seeds[j].soff;
             idx dq = qi - seeds[j].qoff;
@@ -125,7 +147,8 @@ scoring_chain_seeds(ChainWorkData* data,
             min_d = hbn_min(dq, dr);
             sc = (min_d > cov) ? cov : hbn_min(dq, dr);
             log_dd = dd ? ilog2_32(dd) : 0;
-            sc -= (int)(dd * .01 * avg_cov) + (log_dd>>1);
+            if (!is_maximal_exact_match) sc -= (int)(dd * .01 * avg_cov) + (log_dd>>1);
+            else sc -= (log_dd>>1);
             sc += f[j];
             if (sc > max_f) {
                 max_f = sc;
@@ -138,6 +161,7 @@ scoring_chain_seeds(ChainWorkData* data,
         }
         f[i] = max_f;
         p[i] = max_j;
+        //HBN_LOG("f[%d] = %d, p[%d] = %d", i, max_f, i, p[i]);
         // v[i] keeps the peak score up to i;
         // f[i] is the score ending at i, not always the peak score
         v[i] = (max_j >= 0 && v[max_j] > max_f) ? v[max_j] : max_f;
@@ -229,9 +253,27 @@ find_best_kmer_match(ChainWorkData* data,
     return 0;
 }
 
+static BOOL
+init_hit_is_contained(HbnInitHit* ha, int hc, HbnInitHit* hn)
+{
+    const int E = 100;
+    for (int i = 0; i < hc; ++i) {
+        int r = (hn->qbeg + E >= ha[i].qbeg)
+                &&
+                (hn->qend <= ha[i].qend + E)
+                &&
+                (hn->sbeg + E >= ha[i].sbeg)
+                &&
+                (hn->send <= ha[i].send + E);
+        if (r) return TRUE;
+    }
+    return FALSE;
+}
+
 int chaining_find_candidates(ChainWorkData* data,
         ChainSeed* chain_seed_array,
         int chain_seed_count,
+        const int is_maximal_exact_match,
         const int subject_strand,
         vec_init_hit* init_hit_list,
         vec_chain_seed* chain_seed_list)
@@ -242,7 +284,7 @@ int chaining_find_candidates(ChainWorkData* data,
     const int min_cnt = data->min_cnt;
     const int min_score = data->min_score;
     //HBN_LOG("socring mems");
-    scoring_chain_seeds(data, chain_seed_array, chain_seed_count, TRUE);
+    scoring_chain_seeds(data, chain_seed_array, chain_seed_count, is_maximal_exact_match);
     //HBN_LOG("done");
     int* f = kv_data(data->f);
     int* p = kv_data(data->p);
@@ -287,7 +329,9 @@ int chaining_find_candidates(ChainWorkData* data,
     memset(t, 0, sizeof(int) * n);
     int n_v, k;
     int find_can = 0;
-    for (int i = n_v = k = 0; i < n_u; ++i) { // start from the highest score
+    int num_added_hit = 0;
+    int first_hit_idx = kv_size(*init_hit_list);
+    for (int i = n_v = k = 0; i < n_u && num_added_hit < 40; ++i) { // start from the highest score
         int n_v0 = n_v, k0 = k;
         int j = u[i].second;
         if (t[j]) continue;
@@ -318,18 +362,25 @@ int chaining_find_candidates(ChainWorkData* data,
             hit.chain_seed_offset = kv_size(*chain_seed_list);
             hit.chain_seed_count = n_v - n_v0;
             int max_size = 0;
-            for (int x = n_v; x > n_v0; --x) {
-                int y = v[x-1];
-                kv_push(ChainSeed, *chain_seed_list, seeds[y]);
-                if (seeds[y].length > max_size) {
-                    max_size = seeds[y].length;
-                    hit.qoff = seeds[y].qoff + max_size / 2;
-                    hit.soff = seeds[y].soff + max_size / 2;
+            hit.qbeg = seeds[v[n_v-1]].qoff;
+            hit.sbeg = seeds[v[n_v-1]].soff;
+            hit.qend = seeds[v[n_v0]].qoff + seeds[v[n_v0]].length;
+            hit.send = seeds[v[n_v0]].soff + seeds[v[n_v0]].length;
+            if (!init_hit_is_contained(kv_data(*init_hit_list) + first_hit_idx, num_added_hit, &hit)) {
+                for (int x = n_v; x > n_v0; --x) {
+                    int y = v[x-1];
+                    kv_push(ChainSeed, *chain_seed_list, seeds[y]);
+                    if (seeds[y].length > max_size) {
+                        max_size = seeds[y].length;
+                        hit.qoff = seeds[y].qoff + max_size / 2;
+                        hit.soff = seeds[y].soff + max_size / 2;
+                    }
                 }
+		//HBN_LOG("find init hit, [%d, %d] x [%d, %d], score = %d", hit.qbeg, hit.qend, hit.sbeg, hit.send, hit.score);
+                //dump_init_hit(fprintf, stderr, hit);
+                kv_push(HbnInitHit, *init_hit_list, hit);
+                ++num_added_hit;
             }
-            //HBN_LOG("find init hit, sdir = %d", hit.sdir);
-            //dump_init_hit(fprintf, stderr, hit);
-            kv_push(HbnInitHit, *init_hit_list, hit);
         }
 
         if (k0 == k) n_v = n_v0;
@@ -369,12 +420,27 @@ two_chains_are_adjacent(ChainWorkData* data, HbnInitHit* left, HbnInitHit* right
     int max_gap = hbn_max(gap_qry, gap_ref);
     int min_gap = hbn_min(gap_qry, gap_ref);
     if (max_gap > data->max_join_long || min_gap > data->max_join_short) return FALSE;
+
+    int left_qlen = left->qend - left->qbeg;
+    int left_slen = left->send - left->sbeg;
+    int right_qlen = right->qend - right->qbeg;
+    int right_slen = right->send - left->sbeg;
+    const int kMinMemLen = 1000;
+    const int kMinMemScore = 500;
+    int r = (left_qlen < kMinMemLen) || (right_qlen < kMinMemLen) || (left_slen < kMinMemLen) || (right_slen < kMinMemLen);
+    if (r) return FALSE;
+    r = (left->score < kMinMemScore) || (right->score < kMinMemScore);
+    if (r) return FALSE;
+    return TRUE;
+
+#if 0
     int sc_thres = (int)(1.0 * data->min_join_flank_sc / data->max_join_long * max_gap + .499);
     if (left->score < sc_thres || right->score < sc_thres) return FALSE;
     int min_flank_len = (int)(1.0 * max_gap * data->min_join_flank_ratio);
     if (left->send - left->sbeg < min_flank_len || left->qend - left->qbeg < min_flank_len) return FALSE;
     if (right->send - right->sbeg < min_flank_len || right->qend - right->qbeg < min_flank_len) return FALSE;
     return TRUE;
+#endif
 }
 
 void
@@ -382,13 +448,15 @@ join_adjacent_chains(ChainWorkData* data, vec_init_hit* init_hit_list, vec_chain
 {
     if (kv_size(*init_hit_list) < 2) return;
 
-    const int kMaxExamineInitHit = 5;
+    const int kMaxExamineInitHit = 20;
     HbnInitHit* hit_array = kv_data(*init_hit_list);
     int hit_count = kv_size(*init_hit_list);
+    for (int i = 0; i < hit_count; ++i) {
+        set_init_hit_pos_from_chain_seed_list(hit_array + i, kv_data(*chain_seed_list));
+    }
     ks_introsort_init_hit_soff_lt(hit_count, hit_array);
     IntPair* hit_score_and_idx_array = (IntPair*)calloc(hit_count, sizeof(IntPair));
     for (int i = 0; i < hit_count; ++i) {
-        set_init_hit_pos_from_chain_seed_list(hit_array + i, kv_data(*chain_seed_list));
         IntPair ip = { hit_array[i].score, i };
         hit_score_and_idx_array[i] = ip;
     }
